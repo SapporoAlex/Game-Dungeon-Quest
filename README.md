@@ -59,7 +59,6 @@ You can attack enemies on adjacent squares by pressing the attack button, then s
 eg.
 
 <img src="assets/images/three_skull.jpg" width="100">
-
 <img src="assets/images/two_shield.jpg" width="100">
 
 The attacker rolls 3 skulls, and the defender rolls 2 shields. The defender takes 1 damage.
