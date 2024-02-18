@@ -27,7 +27,9 @@ The game is controlled using both the keyboard for movement and mouse clicks for
 
 ## Movement
 Use the arrow keys to move your character around the grid.
-Actions
+
+- Actions
+- 
 <img src="assets/images/move_button_img.jpg" width="50">Move Button: Click to enter the movement phase, then use arrow keys.
 
 <img src="assets/images/attack_button_img.jpg" width="50">Attack Button: Click to enter the attack phase, then click on an adjacent enemy to attack.
