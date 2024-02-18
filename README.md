@@ -8,6 +8,7 @@ Welcome to the repository for Dungeon Quest, a grid-based dungeon crawler game c
 - [Controls](#controls)
 - [How to play](#how-to-play)
 - [Enemies](#enemies)
+- [Combat](#combat)
 - [Customization](#customization)
 - [Installation](#installation)
 - [File Structure](#file-structure)
@@ -38,7 +39,7 @@ Use the arrow keys to move your character around the grid.
 
 <img src="assets/images/crate_img.png" width="50">    <img src="assets/images/table_ew.png" width="100">    <img src="assets/images/chest_img_down.png" width="50">    <img src="assets/images/barrel_img.png" width="50">
 
-<img src="assets/images/potion_img.jpg" width="50">  Potion Button: Click to use a potion to replenish your health to the maximum health (8).
+<img src="assets/images/potion_img.jpg" width="50">  Potion Button: Click to use a potion to replenish your HP to the maximum HP (8).
 
 <img src="assets/images/pass_turn_img.jpg" width="200">  Pass Button: Click to end turn and commence enemy turn.
 
@@ -48,9 +49,17 @@ Use the arrow keys to move your character around the grid.
 The mission in this level is to seek and defeat the red dragon, then return to the stairwell to exit the the level. Fighting the dragon is no easy task, so it is recommended that you search for health potions before facing it in battle.
 
 ## Enemies
-Encounter various enemies like skeletons, goblins, chaos warriors, and even a dragon. Each enemy type has its unique behavior and attack strategy. Beware though, the chaos warrior has 2 hp, and the dragon has 4.
+Encounter various enemies like skeletons, goblins, chaos warriors, and even a dragon. Each enemy type has its unique behavior and attack strategy. Beware though, the chaos warrior has 2 HP, and the dragon has 4 HP.
 
 <img src="assets/images/skeleton_img_down.png" width="50">    <img src="assets/images/goblin_img_down.png" width="50">    <img src="assets/images/chaos_warrior_down_img.png" width="50">    <img src="assets/images/dragon_down_img.png" width="100">
+
+## Combat
+You can attack enemies on adjacent squares by pressing the attack button, then selecting the enemy. Likewise, during the enemy's turn they will move toward you and if adjacent, will attack you. Your character the barbarian has 3 attack dice and 3 defence dice, and can attack twice per turn. Each attack die and defence die have a 50% chance of rolling a skull or shield respectively. The amount of attack and defence dice vary depending on the enemy. If the attacker roll more skulls than the defender rolls shields, the opponent will take the net skulls as damage, reducing their HP to that amount.
+
+eg.
+<img src="assets/images/three_skulls.png" width="50">
+<img src="assets/images/two_shields.png" width="50">
+The attacker rolls 3 skulls, and the defender rolls 2 shields. The defender takes 1 damage.
 
 ## Customization
 Feel free to adapt the game according to your preferences. You can add a title screen, more levels, or introduce new player characters. The game's flexible design encourages creativity and expansion.
