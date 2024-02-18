@@ -84,7 +84,7 @@ Contributions to Dungeon Quest are welcome! Whether it's adding new features, cr
 Alex McKinley
 
 ## Huge Thanks
-I must give a huge thanks to the hard workers who made the Hero Quest game and Space Crusade game on Amiga. Playing these games as a child brought me so much joy, fostered my imagination, and still inspire me to this day.
+I must give a huge thanks to the hard workers who made the Hero Quest game and Space Crusade games on Amiga. Playing these games as a child brought me so much joy, fostered my imagination, and still inspire me to this day.
 
 ## License
 Dungeon Quest is open-source and is available under the MIT License. Feel free to use, modify, and distribute the game as you see fit.
