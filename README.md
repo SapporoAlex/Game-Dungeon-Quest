@@ -18,10 +18,10 @@ Welcome to the repository for Dungeon Quest, a grid-based dungeon crawler game c
 - [License](#license)
 
 ## Features
-Dynamic Gameplay: Move through the dungeon, engage in combat with enemies, and search for treasures.
-Customizable Levels: The game is designed to allow for easy adaptation and expansion. New levels can be added to keep the game exciting.
-Various Characters: Start with a barbarian character, but the game is designed to allow adding new player characters, such as the rogue, with assets already included in the assets folder.
-Interactive UI: Utilize buttons like move, attack, search, and more to interact with the game world.
+- Dynamic Gameplay: Move through the dungeon, engage in combat with enemies, and search for treasures.
+- Customizable Levels: The game is designed to allow for easy adaptation and expansion. New levels can be added to keep the game exciting.
+- Various Characters: Start with a barbarian character, but the game is designed to allow adding new player characters, such as the rogue, with assets already included in the assets folder.
+- Interactive UI: Utilize buttons like move, attack, search, and more to interact with the game world.
 
 ## Controls
 The game is controlled using both the keyboard for movement and mouse clicks for interactions such as attacking, searching, and using items.
