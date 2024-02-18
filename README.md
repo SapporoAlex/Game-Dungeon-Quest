@@ -5,8 +5,8 @@ Welcome to the repository for Dungeon Quest, a grid-based dungeon crawler game c
 
 ## Table of Contents
 - [Features](#features)
+- [Controls](#controls)
 - [How to play](#how-to-play)
-- [Movement](#movement)
 - [Enemies](#enemies)
 - [Customization](#customization)
 - [Installation](#installation)
@@ -22,10 +22,10 @@ Customizable Levels: The game is designed to allow for easy adaptation and expan
 Various Characters: Start with a barbarian character, but the game is designed to allow adding new player characters, such as the rogue, with assets already included in the assets folder.
 Interactive UI: Utilize buttons like move, attack, search, and more to interact with the game world.
 
-## How to Play
+## Controls
 The game is controlled using both the keyboard for movement and mouse clicks for interactions such as attacking, searching, and using items.
 
-## Movement
+## How to Play
 Use the arrow keys to move your character around the grid.
 
 - Actions
@@ -34,7 +34,7 @@ Use the arrow keys to move your character around the grid.
 
 <img src="assets/images/attack_button_img.jpg" width="50">  Attack Button: Click to enter the attack phase, then click on an adjacent enemy to attack.
 
-<img src="assets/images/search_button_img.jpg" width="50">  Search Button: Click to search an adjacent crate, table, chest, or barrel.
+<img src="assets/images/search_button_img.jpg" width="50">  Search Button: Click to search an adjacent crate, table, chest, or barrel. Inside you may find gold, a health potion or nothing.
 
 <img src="assets/images/crate_img.png" width="50">    <img src="assets/images/table_ew.png" width="100">    <img src="assets/images/chest_img_down.png" width="50">    <img src="assets/images/barrel_img.png" width="50">
 
@@ -44,7 +44,8 @@ Use the arrow keys to move your character around the grid.
 
 <img src="assets/images/door_ew.png" width="50">  Door: click on doors when adjacent to open them.
 
-
+- Goal
+The mission in this level is to seek and defeat the red dragon, then return to the stairwell to exit the the level. Fighting the dragon is no easy task, so it is recommended that you search for health potions before facing it in battle.
 
 ## Enemies
 Encounter various enemies like skeletons, goblins, chaos warriors, and even a dragon. Each enemy type has its unique behavior and attack strategy. Beware though, the chaos warrior has 2 hp, and the dragon has 4.
