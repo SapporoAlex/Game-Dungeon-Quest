@@ -43,13 +43,13 @@ Use the arrow keys to move your character around the grid.
 
 <img src="assets/images/pass_turn_img.jpg" width="200">  Pass Button: Click to end turn and commence enemy turn.
 
-<img src="assets/images/door_ew.png" width="50">  Door: click on doors when adjacent to open them.
+<img src="assets/images/door_ew.png" width="50">  Door: click on doors when adjacent to open them, revealing the interior.
 
 - Goal
 The mission in this level is to seek and defeat the red dragon, then return to the stairwell to exit the the level. Fighting the dragon is no easy task, so it is recommended that you search for health potions before facing it in battle.
 
 ## Enemies
-Encounter various enemies like skeletons, goblins, chaos warriors, and even a dragon. Each enemy type has its unique behavior and attack strategy. Beware though, the chaos warrior has 2 HP, and the dragon has 4 HP.
+Encounter various enemies like skeletons, goblins, chaos warriors, and even a dragon. Each enemy type has its unique behavior and attack strategy. Beware though, the chaos warrior has 2 HP, and the dragon has 4 HP. Enemies will pursue you 1 tile per enemy movement phase.
 
 <img src="assets/images/skeleton_img_down.png" width="50">    <img src="assets/images/goblin_img_down.png" width="50">    <img src="assets/images/chaos_warrior_down_img.png" width="50">    <img src="assets/images/dragon_down_img.png" width="100">
 
