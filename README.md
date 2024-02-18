@@ -36,18 +36,20 @@ Use the arrow keys to move your character around the grid.
 
 <img src="assets/images/search_button_img.jpg" width="50">  Search Button: Click to search an adjacent crate, table, chest, or barrel.
 
-<img src="assets/images/crate_img.png" width="50"><img src="assets/images/table_ew.png" width="100"><img src="assets/images/chest_img.png" width="50"><img src="assets/images/barrel_img.png" width="50">
+<img src="assets/images/crate_img.png" width="50">  <img src="assets/images/table_ew.png" width="100">  <img src="assets/images/chest_img_down.png" width="50">  <img src="assets/images/barrel_img.png" width="50">
 
 <img src="assets/images/potion_img.jpg" width="50">  Potion Button: Click to use a potion to replenish your health to the maximum health (8).
 
 <img src="assets/images/pass_turn_img.jpg" width="200">  Pass Button: Click to end turn and commence enemy turn.
 
-<img src="assets/images/door_ew.png" width="200">  Door: click on doors when adjacent to open them.
+<img src="assets/images/door_ew.png" width="50">  Door: click on doors when adjacent to open them.
 
 
 
 ## Enemies
-Encounter various enemies like skeletons, goblins, chaos warriors, and even a dragon. Each enemy type has its unique behavior and attack strategy.
+Encounter various enemies like skeletons, goblins, chaos warriors, and even a dragon. Each enemy type has its unique behavior and attack strategy. Beware though, the chaos warrior has 2 hp, and the dragon has 4.
+
+<img src="assets/images/skeleton_img_down.png" width="50">  <img src="assets/images/goblin_img_down.png" width="50">  <img src="assets/images/chaos_warrior_img_down.png" width="100">  <img src="assets/images/dragon_img.png" width="100">
 
 ## Customization
 Feel free to adapt the game according to your preferences. You can add a title screen, more levels, or introduce new player characters. The game's flexible design encourages creativity and expansion.
