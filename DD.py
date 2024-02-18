@@ -8,7 +8,7 @@ pygame.mixer.init()
 
 width, height = 1200, 800
 screen = pygame.display.set_mode((width, height))
-pygame.display.set_caption("Dungeon Delver")
+pygame.display.set_caption("Dungeon Quest")
 grid_size = 50
 grid_color = (155, 155, 155)
 number_rows = height // grid_size
