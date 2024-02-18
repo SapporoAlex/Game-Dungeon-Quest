@@ -36,9 +36,15 @@ Use the arrow keys to move your character around the grid.
 
 <img src="assets/images/search_button_img.jpg" width="50">  Search Button: Click to search an adjacent crate, table, chest, or barrel.
 
+<img src="assets/images/crate_img.png" width="50"><img src="assets/images/table_ew.png" width="100"><img src="assets/images/chest_img.png" width="50"><img src="assets/images/barrel_img.png" width="50">
+
 <img src="assets/images/potion_img.jpg" width="50">  Potion Button: Click to use a potion to replenish your health to the maximum health (8).
 
 <img src="assets/images/pass_turn_img.jpg" width="200">  Pass Button: Click to end turn and commence enemy turn.
+
+<img src="assets/images/door_ew.png" width="200">  Door: click on doors when adjacent to open them.
+
+
 
 ## Enemies
 Encounter various enemies like skeletons, goblins, chaos warriors, and even a dragon. Each enemy type has its unique behavior and attack strategy.
