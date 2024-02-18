@@ -49,7 +49,7 @@ Use the arrow keys to move your character around the grid.
 ## Enemies
 Encounter various enemies like skeletons, goblins, chaos warriors, and even a dragon. Each enemy type has its unique behavior and attack strategy. Beware though, the chaos warrior has 2 hp, and the dragon has 4.
 
-<img src="assets/images/skeleton_img_down.png" width="50">  <img src="assets/images/goblin_img_down.png" width="50">  <img src="assets/images/chaos_warrior_img_down.png" width="100">  <img src="assets/images/dragon_img.png" width="100">
+<img src="assets/images/skeleton_img_down.png" width="50">  <img src="assets/images/goblin_img_down.png" width="50">  <img src="assets/images/chaos_warrior_down_img.png" width="100">  <img src="assets/images/dragon_down_img.png" width="100">
 
 ## Customization
 Feel free to adapt the game according to your preferences. You can add a title screen, more levels, or introduce new player characters. The game's flexible design encourages creativity and expansion.
