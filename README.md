@@ -1,7 +1,7 @@
 # Dungeon Quest
 Welcome to the repository for Dungeon Quest, a grid-based dungeon crawler game created using Pygame in Python. In this game, you navigate through various levels of a dungeon, fighting off enemies, searching for loot, and trying to complete your quest.
 
-<img src="assets/preview.gif" width="400">
+<img src="assets/preview.gif" width="800">
 
 ## Table of Contents
 - [Features](#features)
