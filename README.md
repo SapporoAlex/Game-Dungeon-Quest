@@ -43,7 +43,7 @@ Use the arrow keys to move your character around the grid.
 
 <img src="assets/images/pass_turn_img.jpg" width="200">  Pass Button: Click to end turn and commence enemy turn.
 
-<img src="assets/images/door_ew.png" width="50">  Door: click on doors when adjacent to open them, revealing the interior.
+<img src="assets/images/door_ew.png" width="50">  Door: Click on doors when adjacent to open them, revealing the interior.
 
 - Goal
 The mission in this level is to seek and defeat the red dragon, then return to the stairwell to exit the the level. Fighting the dragon is no easy task, so it is recommended that you search for health potions before facing it in battle.
