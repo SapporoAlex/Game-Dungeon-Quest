@@ -72,7 +72,9 @@ To run Dungeon Quest, you'll need Python and Pygame installed on your system.
 Clone the repository or download the source code.
 Ensure you have Python installed. If not, download and install it from python.org.
 Install Pygame by running pip install pygame in your terminal or command prompt.
-Navigate to the game's directory and run python dungeon_quest.py to start the game.
+Navigate to the game's directory and run 
+```python DD.py```
+to start the game.
 
 ## File Structure
 The DD.py file runs the game. The game_maps.py has the tile map information used by the DD.py file to choose the correct tiles for the level. Please feel free to add more levels in this file. The assets folder contains the images and audio files in seperate folders.
