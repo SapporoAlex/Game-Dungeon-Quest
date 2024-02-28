@@ -38,7 +38,7 @@ Use the arrow keys to move your character around the grid.
 
 <img src="assets/images/UI/search_button_img.jpg" width="50">  Search Button: Click to search an adjacent crate, table, chest, or barrel. Inside you may find gold, a health potion or nothing.
 
-<img src="assets/images/UI/crate_img.png" width="50">    <img src="assets/images/table_ew.png" width="100">    <img src="assets/images/chest_img_down.png" width="50">    <img src="assets/images/barrel_img.png" width="50">
+<img src="assets/images/crate_img.png" width="50">    <img src="assets/images/table_ew.png" width="100">    <img src="assets/images/chest_img_down.png" width="50">    <img src="assets/images/barrel_img.png" width="50">
 
 <img src="assets/images/UI/potion_img.jpg" width="50">  Potion Button: Click to use a potion to replenish your HP to the maximum HP (8).
 
