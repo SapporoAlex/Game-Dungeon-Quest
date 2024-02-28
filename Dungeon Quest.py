@@ -6,11 +6,11 @@ import game_maps
 # Hello brave adventurer!
 # To add a new level,
 # add a new wall grid to the game_maps.py module, values between 11 and 14 are walls, 15 is the stairwell, 16 the chains
-# please add a new button for it on the menu (204),
-# add the button logic to the mission select menu (795),
-# add the level select logic to (828),
-# within the main loop (831), add the 'if chosen_level == level_3...' constants including doors.
-# follow the example of the pre-existing levels (874),
+# please add a new button for it on the menu (205),
+# add the button logic to the mission select menu (796),
+# add the level select logic to (829),
+# within the main loop (832), add the 'if chosen_level == level_3...' constants including doors.
+# follow the example of the pre-existing levels (875),
 # add logic to the level within the 'if player turn', using if statements such as:
 # "if (door8 not in doors or door11 not in doors) and room1closed and chosen_map == level_3:"
 # Basically events trigger when a door is opened or the player is at a specified x y
