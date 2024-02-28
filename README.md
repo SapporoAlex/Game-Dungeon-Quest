@@ -31,19 +31,19 @@ Use the arrow keys to move your character around the grid.
 
 - Actions
 
-<img src="assets/images/move_button_img.jpg" width="50">  Move Button: Click to enter the movement phase, then use arrow keys.
+<img src="assets/images/UI/move_button_img.jpg" width="50">  Move Button: Click to enter the movement phase, then use arrow keys.
 
-<img src="assets/images/attack_button_img.jpg" width="50">  Attack Button: Click to enter the attack phase, then click on an adjacent enemy to attack.
+<img src="assets/images/UI/attack_button_img.jpg" width="50">  Attack Button: Click to enter the attack phase, then click on an adjacent enemy to attack.
 
-<img src="assets/images/search_button_img.jpg" width="50">  Search Button: Click to search an adjacent crate, table, chest, or barrel. Inside you may find gold, a health potion or nothing.
+<img src="assets/images/UI/search_button_img.jpg" width="50">  Search Button: Click to search an adjacent crate, table, chest, or barrel. Inside you may find gold, a health potion or nothing.
 
-<img src="assets/images/crate_img.png" width="50">    <img src="assets/images/table_ew.png" width="100">    <img src="assets/images/chest_img_down.png" width="50">    <img src="assets/images/barrel_img.png" width="50">
+<img src="assets/images/UI/crate_img.png" width="50">    <img src="assets/images/table_ew.png" width="100">    <img src="assets/images/chest_img_down.png" width="50">    <img src="assets/images/barrel_img.png" width="50">
 
-<img src="assets/images/potion_img.jpg" width="50">  Potion Button: Click to use a potion to replenish your HP to the maximum HP (8).
+<img src="assets/images/UI/potion_img.jpg" width="50">  Potion Button: Click to use a potion to replenish your HP to the maximum HP (8).
 
-<img src="assets/images/pass_turn_img.jpg" width="200">  Pass Button: Click to end turn and commence enemy turn.
+<img src="assets/images/UI/pass_turn_img.jpg" width="200">  Pass Button: Click to end turn and commence enemy turn.
 
-<img src="assets/images/door_ew.png" width="50">  Door: Click on doors when adjacent to open them, revealing the interior.
+<img src="assets/images/UI/door_ew.png" width="50">  Door: Click on doors when adjacent to open them, revealing the interior.
 
 - Goal
 The mission in this level is to seek and defeat the red dragon, then return to the stairwell to exit the the level. Fighting the dragon is no easy task, so it is recommended that you search for health potions before facing it in battle.
@@ -58,8 +58,8 @@ You can attack enemies on adjacent squares by pressing the attack button, then s
 
 eg.
 
-<img src="assets/images/three_skull.jpg" width="100">
-<img src="assets/images/two_shield.jpg" width="100">
+<img src="assets/images/UI/three_skull.jpg" width="100">
+<img src="assets/images/UI/two_shield.jpg" width="100">
 
 The attacker rolls 3 skulls, and the defender rolls 2 shields. The defender takes 1 damage.
 
