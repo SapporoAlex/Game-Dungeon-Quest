@@ -45,6 +45,7 @@ select_mission_button = pygame.image.load("assets/images/select_quest_button.png
 mission_0_button = pygame.image.load("assets/images/Tutorial.png")
 mission_1_button = pygame.image.load("assets/images/Quest 1.png")
 mission_2_button = pygame.image.load("assets/images/Quest 2.png")
+icon = pygame.image.load('assets/icon.jpg')
 
 # In-game UI images
 panel_img = pygame.image.load("assets/images/UI/panel.jpg")
