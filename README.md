@@ -18,8 +18,9 @@ Welcome to the repository for Dungeon Quest, a grid-based dungeon crawler game c
 - [License](#license)
 
 ## Features
+- A title screen with menus.
 - Dynamic Gameplay: Move through the dungeon, engage in combat with enemies, and search for treasures.
-- Customizable Levels: The game is designed to allow for easy adaptation and expansion. New levels can be added to keep the game exciting.
+- 3 Levels: The 3 levels include a brief totorial, a 2nd level where you must choose a path full of random enemies and arrow traps, and a 3rd level where you must hunt down and defeat the red dragon. The game is designed to allow for easy adaptation and expansion. New levels can be added to keep the game exciting.
 - Various Characters: Start with a barbarian character, but the game is designed to allow adding new player characters, such as the rogue, with assets already included in the assets folder.
 - Interactive UI: Utilize buttons like move, attack, search, and more to interact with the game world.
 
@@ -46,10 +47,10 @@ Use the arrow keys to move your character around the grid.
 <img src="assets/images/UI/door_ew.png" width="50">  Door: Click on doors when adjacent to open them, revealing the interior.
 
 - Goal
-The mission in this level is to seek and defeat the red dragon, then return to the stairwell to exit the the level. Fighting the dragon is no easy task, so it is recommended that you search for health potions before facing it in battle.
+Follow the level's on-screen instructions to complete the goal of the level.
 
 ## Enemies
-Encounter various enemies like skeletons, goblins, chaos warriors, and even a dragon. Each enemy type has its unique behavior and attack strategy. Beware though, the chaos warrior has 2 HP, and the dragon has 4 HP. Enemies will pursue you 1 tile per enemy movement phase.
+Encounter various enemies like skeletons, goblins, chaos warriors, arrow traps and even a dragon. Each enemy type has its unique behavior and attack strategy. Beware though, the chaos warrior has 2 HP, and the dragon has 4 HP. Enemies will pursue you 1 tile per enemy movement phase.
 
 <img src="assets/images/skeleton_img_down.png" width="50">    <img src="assets/images/goblin_img_down.png" width="50">    <img src="assets/images/chaos_warrior_down_img.png" width="50">    <img src="assets/images/dragon_down_img.png" width="100">
 
@@ -64,7 +65,7 @@ eg.
 The attacker rolls 3 skulls, and the defender rolls 2 shields. The defender takes 1 damage.
 
 ## Customization
-Feel free to adapt the game according to your preferences. You can add a title screen, more levels, or introduce new player characters. The game's flexible design encourages creativity and expansion.
+Feel free to adapt the game according to your preferences. You can add more levels and enemies, or introduce new player characters. The game's flexible design encourages creativity and expansion.
 
 ## Installation
 To run Dungeon Quest, you'll need Python and Pygame installed on your system.
@@ -77,7 +78,7 @@ Navigate to the game's directory and run
 to start the game.
 
 ## File Structure
-The DD.py file runs the game. The game_maps.py has the tile map information used by the DD.py file to choose the correct tiles for the level. Please feel free to add more levels in this file. The assets folder contains the images and audio files in seperate folders.
+The Dungeon Quest.py file runs the game. The game_maps.py has the tile map information used by the Dungeon Quest.py file to choose the correct tiles for the level. Please feel free to add more levels in this file. The assets folder contains the images and audio files in seperate folders.
 
 ## Contributing
 Contributions to Dungeon Quest are welcome! Whether it's adding new features, creating new levels, or improving the code, feel free to fork the repository and submit a pull request.
