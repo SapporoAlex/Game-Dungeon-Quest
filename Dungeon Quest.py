@@ -782,7 +782,7 @@ def reset_player():
 def main_menu():
     at_main_menu = True
     while at_main_menu:
-        pygame.mixer.music.load("assets/audio/Hero Quest Amiga Theme.mp3")
+        pygame.mixer.music.load("assets/audio/Atlantis Rage - Jimena Contreras.mp3")
         pygame.mixer.music.play(loops=-1)
         screen.blit(main_bg, (0, 0))
         screen.blit(title_img, (0, 0))
@@ -878,7 +878,7 @@ while run:
     room15closed = True
 
     if chosen_map == level_0:
-        pygame.mixer.music.load("assets/audio/Hero Quest Ingame Music (Amiga).mp3")
+        pygame.mixer.music.load("assets/audio/Devil's Organ - Jimena Contreras.mp3")
         game_maps.game_map_0()
         player_pos = [150, 300]
         player = Player(150, 300, 50)
@@ -925,7 +925,7 @@ while run:
         pygame.mixer.music.play(loops=-1)
 
     if chosen_map == level_1:
-        pygame.mixer.music.load("assets/audio/Hero Quest Ingame Music (Amiga).mp3")
+        pygame.mixer.music.load("assets/audio/Devil's Organ - Jimena Contreras.mp3")
         game_maps.game_map_1()
         player_pos = [450, 350]
         player = Player(450, 350, 50)
@@ -988,7 +988,7 @@ while run:
         pygame.mixer.music.play(loops=-1)
 
     if chosen_map == level_2:
-        pygame.mixer.music.load("assets/audio/Hero Quest Ingame Music (Amiga).mp3")
+        pygame.mixer.music.load("assets/audio/Devil's Organ - Jimena Contreras.mp3")
         game_maps.game_map_2()
         player_pos = [0, 0]
         player = Player(0, 0, 50)
