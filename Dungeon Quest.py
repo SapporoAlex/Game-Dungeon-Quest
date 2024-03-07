@@ -1005,6 +1005,7 @@ while run:
         doors.append(door2)
         door3 = Door(300, 350, door_ew)
         doors.append(door3)
+        door4 = 0
         door5 = Door(200, 450, door_ew)
         doors.append(door5)
         door6 = Door(300, 450, door_ew)
