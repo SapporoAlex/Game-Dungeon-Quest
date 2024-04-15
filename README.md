@@ -46,8 +46,7 @@ Use the arrow keys to move your character around the grid.
 
 <img src="assets/images/door_ew.png" width="50">  Door: Click on doors when adjacent to open them, revealing the interior.
 
-- Goal
-  Follow the level's on-screen instructions to complete the goal of the level.
+- Goal: Follow the level's on-screen instructions to complete the goal of the level.
 
 ## Enemies
 Encounter various enemies like skeletons, goblins, chaos warriors, arrow traps and even a dragon. Each enemy type has its unique behavior and attack strategy. Beware though, the chaos warrior has 2 HP, and the dragon has 4 HP. Enemies will pursue you 1 tile per enemy movement phase.
