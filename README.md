@@ -73,7 +73,10 @@ Clone the repository or download the source code.
 Ensure you have Python installed. If not, download and install it from python.org.
 Install Pygame by running pip install pygame in your terminal or command prompt.
 Navigate to the game's directory and run 
-```python Dungeon Quest.py```
+
+```bash
+python Dungeon Quest.py
+```
 to start the game.
 
 ## File Structure
