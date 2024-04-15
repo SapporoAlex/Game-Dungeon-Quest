@@ -93,5 +93,4 @@ I must give a huge thanks to the hard workers who made the Hero Quest game and S
 
 ## License
 Dungeon Quest is open-source and is available under the MIT License. Feel free to use, modify, and distribute the game as you see fit.
-
 Enjoy exploring the dungeons and embarking on quests in Dungeon Quest!
