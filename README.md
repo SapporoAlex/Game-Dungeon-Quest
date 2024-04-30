@@ -80,7 +80,7 @@ python Dungeon Quest.py
 to start the game.
 
 ## File Structure
-The Dungeon Quest.py file runs the game. The game_maps.py has the tile map information used by the Dungeon Quest.py file to choose the correct tiles for the level. Please feel free to add more levels in this file. The assets folder contains the images and audio files in seperate folders.
+The Dungeon Quest.py file runs the game. The game_maps.py has the tile map information used by the Dungeon Quest.py file to choose the correct tiles for the level. Please feel free to add more levels in this file. the items.txt file stores the amount of gold and health potions the player has in their inventory. This data is loaded and saved at the begining and end of each level. The assets folder contains the images and audio files in seperate folders.
 
 ## Contributing
 Contributions to Dungeon Quest are welcome! Whether it's adding new features, creating new levels, or improving the code, feel free to fork the repository and submit a pull request.
