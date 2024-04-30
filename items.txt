@@ -1,2 +1,2 @@
-gold: 2
-healthpotions: 5
+gold: 0
+healthpotions: 0
