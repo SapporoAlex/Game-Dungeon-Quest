@@ -6,11 +6,11 @@ import game_maps
 # Hello brave adventurer!
 # To add a new level,
 # add a new wall grid to the game_maps.py module, values between 11 and 14 are walls, 15 is the stairwell, 16 the chains
-# please add a new button for it on the menu (205),
-# add the button logic to the mission select menu (796),
-# add the level select logic to (829),
-# within the main loop (832), add the 'if chosen_level == level_3...' constants including doors.
-# follow the example of the pre-existing levels (875),
+# please add a new button for it on the menu (204),
+# add the button logic to the mission select menu (795),
+# add the level select logic to (828),
+# within the main loop (831), add the 'if chosen_level == level_3...' constants including doors.
+# follow the example of the pre-existing levels (874),
 # add logic to the level within the 'if player turn', using if statements such as:
 # "if (door8 not in doors or door11 not in doors) and room1closed and chosen_map == level_3:"
 # Basically events trigger when a door is opened or the player is at a specified x y
@@ -23,7 +23,7 @@ pygame.mixer.init()
 # Constants
 width, height = 1200, 800
 screen = pygame.display.set_mode((width, height))
-pygame.display.set_caption("Dungeon Delver")
+pygame.display.set_caption("Dungeon Quest")
 grid_size = 50
 grid_color = (155, 155, 155)
 number_rows = height // grid_size
@@ -45,7 +45,7 @@ select_mission_button = pygame.image.load("assets/images/select_quest_button.png
 mission_0_button = pygame.image.load("assets/images/Tutorial.png")
 mission_1_button = pygame.image.load("assets/images/Quest 1.png")
 mission_2_button = pygame.image.load("assets/images/Quest 2.png")
-icon = pygame.image.load('assets/icon.jpg')
+icon = pygame.image.load('assets/images/icon.jpg')
 pygame.display.set_icon(icon)
 
 # In-game UI images
@@ -571,7 +571,7 @@ class Player:
         self.search = 1
         self.maximum_health = 8
         self.health = 8
-        self.potion = 1
+        self.potion = 0
         self.loot = 0
 
     def move(self, dx, dy, enemies):
@@ -593,6 +593,43 @@ class Player:
                 player.movement -= 1
                 return True
         return False
+
+    def load_items(self):
+        with open('items.txt', 'r') as inv:
+            for line in inv:
+                if line.startswith('gold:'):
+                    gold_inventory = line.split()[1]
+                    self.loot = int(gold_inventory)
+                if line.startswith('healthpotions:'):
+                    healthpotions_inventory = line.split()[1]
+                    self.potion = int(healthpotions_inventory)
+        inv.close()
+
+    def save_items(self):
+        with open('items.txt', 'r') as inv:
+            lines = inv.readlines()
+
+        for i, line in enumerate(lines):
+            if line.startswith('gold:'):
+                lines[i] = f"gold: {self.loot}\n"
+            elif line.startswith('healthpotions:'):
+                lines[i] = f"healthpotions: {self.potion}\n"
+
+        with open('items.txt', 'w') as inv:
+            inv.writelines(lines)
+
+    def reset_items(self):
+        with open('items.txt', 'r') as inv:
+            lines = inv.readlines()
+
+        for i, line in enumerate(lines):
+            if line.startswith('gold:'):
+                lines[i] = f"gold: 0\n"
+            elif line.startswith('healthpotions:'):
+                lines[i] = f"healthpotions: 0\n"
+
+        with open('items.txt', 'w') as inv:
+            inv.writelines(lines)
 
 
 def draw_floor_tiles():
@@ -739,10 +776,16 @@ def search():
         display_message(nothing_found_msg)
     if luck == 3:
         display_message(potion_found_msg)
-        player.potion += 1
+        if player.potion < 9:
+            player.potion += 1
+        else:
+            pass
     if luck == 4:
         display_message(gold_found_msg)
-        player.loot += 1
+        if player.loot < 9:
+            player.loot += 1
+        else:
+            pass
 
 
 # menu_music = pygame.mixer.Sound("assets/audio/Hero Quest Amiga Theme.mp3")
@@ -776,13 +819,12 @@ def display_everything():
 def reset_player():
     player.health = player.maximum_health
     player.movement = player.maximum_movement
-    player.potion = 1
 
 
 def main_menu():
     at_main_menu = True
     while at_main_menu:
-        pygame.mixer.music.load("assets/audio/Atlantis Rage - Jimena Contreras.mp3")
+        pygame.mixer.music.load("assets/audio/Devil's Organ - Jimena Contreras.mp3")
         pygame.mixer.music.play(loops=-1)
         screen.blit(main_bg, (0, 0))
         screen.blit(title_img, (0, 0))
@@ -849,6 +891,7 @@ while run:
     if chosen_map == 3:
         mission_selected = True
 
+
     # Setting default values for new game
     movement_phase = True
     attack_phase = False
@@ -878,11 +921,11 @@ while run:
     room15closed = True
 
     if chosen_map == level_0:
-        pygame.mixer.music.load("assets/audio/Devil's Organ - Jimena Contreras.mp3")
+        pygame.mixer.music.load("assets/audio/Atlantis Rage - Jimena Contreras.mp3")
         game_maps.game_map_0()
         player_pos = [150, 300]
         player = Player(150, 300, 50)
-        player.potion -= 1
+        player.load_items()
         enemies = []
         doors = []
         tables = []
@@ -925,11 +968,11 @@ while run:
         pygame.mixer.music.play(loops=-1)
 
     if chosen_map == level_1:
-        pygame.mixer.music.load("assets/audio/Devil's Organ - Jimena Contreras.mp3")
+        pygame.mixer.music.load("assets/audio/Atlantis Rage - Jimena Contreras.mp3")
         game_maps.game_map_1()
         player_pos = [450, 350]
         player = Player(450, 350, 50)
-        player.potion -= 1
+        player.load_items()
         player.health -= 2
         enemies = []
         doors = []
@@ -988,10 +1031,11 @@ while run:
         pygame.mixer.music.play(loops=-1)
 
     if chosen_map == level_2:
-        pygame.mixer.music.load("assets/audio/Devil's Organ - Jimena Contreras.mp3")
+        pygame.mixer.music.load("assets/audio/Atlantis Rage - Jimena Contreras.mp3")
         game_maps.game_map_2()
         player_pos = [0, 0]
         player = Player(0, 0, 50)
+        player.load_items()
         enemies = []
         doors = []
         tables = []
@@ -1050,10 +1094,12 @@ while run:
         if player.health <= 0:
             display_message(died_msg)
             reset_player()
+            player.reset_items()
             main_menu()
             mission_selected = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                player.save_items()
                 run = False
                 pygame.quit()
                 sys.exit()
@@ -1089,6 +1135,7 @@ while run:
                 if chosen_map == level_0 and player.x == 850 and player.y == 450:
                     display_message(quest_complete)
                     reset_player()
+                    player.save_items()
                     main_menu()
                     enemies = []
                     doors = []
@@ -1104,6 +1151,7 @@ while run:
                 if chosen_map == level_1 and player.x == 0 and player.y == 350:
                     display_message(quest_complete)
                     reset_player()
+                    player.save_items()
                     main_menu()
                     enemies = []
                     doors = []
@@ -1126,6 +1174,7 @@ while run:
                     if level_2_win_condition() == 1:
                         display_message(quest_complete)
                         reset_player()
+                        player.save_items()
                         main_menu()
                         mission_selected = False
                         enemies = []
