@@ -21,6 +21,7 @@ Welcome to the repository for Dungeon Quest, a grid-based dungeon crawler game c
 - A title screen with menus.
 - Dynamic Gameplay: Move through the dungeon, engage in combat with enemies, and search for treasures.
 - 3 Levels: The 3 levels include a brief totorial, a 2nd level where you must choose a path full of random enemies and arrow traps, and a 3rd level where you must hunt down and defeat the red dragon. The game is designed to allow for easy adaptation and expansion. New levels can be added to keep the game exciting.
+- A store you can visit between levels to upgrade your character buy spending gold.
 - Various Characters: Start with a barbarian character, but the game is designed to allow adding new player characters, such as the rogue, with assets already included in the assets folder.
 - Interactive UI: Utilize buttons like move, attack, search, and more to interact with the game world.
 
