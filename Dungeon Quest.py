@@ -1489,8 +1489,7 @@ while run:
         play_random_song(songs)
         game_maps.game_map_3()
         player_pos = [50, 600]
-        # player = Player(750, 600, 50)
-        player = Player(750, 50, 50)
+        player = Player(50, 600, 50)
         player.load_items()
         enemies = []
         doors = []
