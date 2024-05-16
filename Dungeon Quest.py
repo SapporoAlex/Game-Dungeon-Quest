@@ -1,5 +1,5 @@
 import time
-
+import os
 import pygame
 import sys
 import random as rd
@@ -55,6 +55,7 @@ exit_game_button = pygame.image.load("assets/images/exit_game_button.png")
 mission_0_button = pygame.image.load("assets/images/Tutorial.png")
 mission_1_button = pygame.image.load("assets/images/Quest 1.png")
 mission_2_button = pygame.image.load("assets/images/Quest 2.png")
+mission_3_button = pygame.image.load("assets/images/Quest 3.png")
 icon = pygame.image.load('assets/images/icon.jpg')
 pygame.display.set_icon(icon)
 
@@ -113,6 +114,7 @@ one_shield_img = pygame.image.load("assets/images/UI/one_shield.jpg")
 two_shield_img = pygame.image.load("assets/images/UI/two_shield.jpg")
 three_shield_img = pygame.image.load("assets/images/UI/three_shield.jpg")
 attack_field_blank = pygame.image.load("assets/images/UI/attack field blank.jpg")
+fire_img = pygame.image.load("assets/images/fire.png")
 
 # Shop items
 buy_potion_img = pygame.image.load("assets/images/UI/buy_potion_img.jpg")
@@ -182,6 +184,12 @@ FLOOR_TILE_PATHS = ["assets/images/floor_tile_img_1.png", "assets/images/floor_t
                     "assets/images/floor_tile_img_5.png", "assets/images/floor_tile_img_6.png",
                     "assets/images/floor_tile_img_7.png", "assets/images/floor_tile_img_8.png",
                     "assets/images/floor_tile_img_9.png", "assets/images/floor_tile_img_10.png"]
+GREEN_TILE_PATHS = ["assets/images/floor_tile_g_img_1.png", "assets/images/floor_tile_g_img_2.png",
+                    "assets/images/floor_tile_g_img_3.png", "assets/images/floor_tile_g_img_4.png",
+                    "assets/images/floor_tile_g_img_5.png"]
+BLUE_TILE_PATHS = ["assets/images/floor_tile_b_img_1.png", "assets/images/floor_tile_b_img_2.png",
+                    "assets/images/floor_tile_b_img_3.png", "assets/images/floor_tile_b_img_4.png",
+                    "assets/images/floor_tile_b_img_5.png"]
 WALL_TILE_PATHS = ["assets/images/wall_img_1.png", "assets/images/wall_img_2.png",
                    "assets/images/wall_img_3.png", "assets/images/wall_img_4.png", ]
 stairs_img = pygame.image.load("assets/images/stairs_img.png")
@@ -229,6 +237,8 @@ number_to_images_dict = {
 }
 
 floor_tile_images = [pygame.image.load(path).convert_alpha() for path in FLOOR_TILE_PATHS]
+green_floor_tile_images = [pygame.image.load(path).convert_alpha() for path in GREEN_TILE_PATHS]
+blue_floor_tile_images = [pygame.image.load(path).convert_alpha() for path in BLUE_TILE_PATHS]
 wall_tile_images = [pygame.image.load(path).convert_alpha() for path in WALL_TILE_PATHS]
 
 # Floor tiles for areas the characters can move,
@@ -254,6 +264,33 @@ tile_dict = {
     16: chain_img
 }
 
+colour_tile_dict = {
+    1: green_floor_tile_images[0],
+    2: green_floor_tile_images[1],
+    3: green_floor_tile_images[2],
+    4: green_floor_tile_images[3],
+    5: green_floor_tile_images[4],
+    6: blue_floor_tile_images[0],
+    7: blue_floor_tile_images[1],
+    8: blue_floor_tile_images[2],
+    9: blue_floor_tile_images[3],
+    10: blue_floor_tile_images[4],
+    11: floor_tile_images[0],
+    12: floor_tile_images[1],
+    13: floor_tile_images[2],
+    14: floor_tile_images[3],
+    15: floor_tile_images[4],
+    16: wall_tile_images[0],
+    17: wall_tile_images[1],
+    18: wall_tile_images[2],
+    19: wall_tile_images[3],
+    20: stairs_img,
+    21: chain_img
+}
+
+directory = "assets/audio/music/"
+
+
 # Buttons
 move_button_placeholder = move_button_img
 attack_button_placeholder = attack_button_img
@@ -263,6 +300,7 @@ select_mission_button_placeholder = select_mission_button
 mission_0_button_placeholder = mission_0_button
 mission_1_button_placeholder = mission_1_button
 mission_2_button_placeholder = mission_2_button
+mission_3_button_placeholder = mission_3_button
 
 buy_potion_img_placeholder = buy_potion_img
 buy_speed_potion_img_placeholder = buy_speed_potion_img
@@ -315,6 +353,8 @@ mission_1_button_rect = pygame.Rect(width / 2 - 122, 460, mission_1_button_place
                                     mission_1_button_placeholder.get_height())
 mission_2_button_rect = pygame.Rect(width / 2 - 122, 520, mission_2_button_placeholder.get_width(),
                                     mission_2_button_placeholder.get_height())
+mission_3_button_rect = pygame.Rect(width / 2 - 122, 580, mission_3_button_placeholder.get_width(),
+                                    mission_3_button_placeholder.get_height())
 
 
 class Furniture:
@@ -363,6 +403,16 @@ class Chest(Furniture):
 
 def calculate_distance(x1, y1, x2, y2):
     return ((x2 - x1)**2 + (y2 - y1)**2)**0.5
+
+
+class Fire:
+    def __init__(self, x, y):
+        self.img = fire_img
+        self.x = x
+        self.y = y
+
+    def draw(self, window):
+        window.blit(self.img, (self.x, self.y))
 
 
 class Enemy:
@@ -454,10 +504,16 @@ class Skeleton(Enemy):
             for _ in range(6):
                 # Check if the new position is within bounds and not a wall
                 if 0 <= grid_x < number_columns and 0 <= grid_y < number_rows:
-                    if game_maps.grid[grid_y][grid_x] <= 10:  # Assuming numbers <= 10 are not walls
-                        # Update the enemy's position if it's not a wall
-                        self.x = new_x
-                        self.y = new_y
+                    if level_3:
+                        if game_maps.grid[grid_y][grid_x] <= 15:  # numbers <= 10 are not walls
+                            # Update the enemy's position if it's not a wall
+                            self.x = new_x
+                            self.y = new_y
+                    else:
+                        if game_maps.grid[grid_y][grid_x] <= 10:  # numbers <= 10 are not walls
+                            # Update the enemy's position if it's not a wall
+                            self.x = new_x
+                            self.y = new_y
 
 
 class Goblin(Enemy):
@@ -491,10 +547,16 @@ class Goblin(Enemy):
             # Check if the new position is within bounds and not a wall
             for _ in range(6):
                 if 0 <= grid_x < number_columns and 0 <= grid_y < number_rows:
-                    if game_maps.grid[grid_y][grid_x] <= 10:  # numbers <= 10 are not walls
-                        # Update the enemy's position if it's not a wall
-                        self.x = new_x
-                        self.y = new_y
+                    if level_3:
+                        if game_maps.grid[grid_y][grid_x] <= 15:  # numbers <= 10 are not walls
+                            # Update the enemy's position if it's not a wall
+                            self.x = new_x
+                            self.y = new_y
+                    else:
+                        if game_maps.grid[grid_y][grid_x] <= 10:  # numbers <= 10 are not walls
+                            # Update the enemy's position if it's not a wall
+                            self.x = new_x
+                            self.y = new_y
 
     def attack_player(self, player):
         distance = calculate_distance(self.x, self.y, player.x, player.y)
@@ -548,10 +610,16 @@ class ChaosWarrior(Enemy):
             # Check if the new position is within bounds and not a wall
             for _ in range(6):
                 if 0 <= grid_x < number_columns and 0 <= grid_y < number_rows:
-                    if game_maps.grid[grid_y][grid_x] <= 10:  # numbers <= 10 are not walls
-                        # Update the enemy's position if it's not a wall
-                        self.x = new_x
-                        self.y = new_y
+                    if level_3:
+                        if game_maps.grid[grid_y][grid_x] <= 15:  # numbers <= 10 are not walls
+                            # Update the enemy's position if it's not a wall
+                            self.x = new_x
+                            self.y = new_y
+                    else:
+                        if game_maps.grid[grid_y][grid_x] <= 10:  # numbers <= 10 are not walls
+                            # Update the enemy's position if it's not a wall
+                            self.x = new_x
+                            self.y = new_y
 
     def attack_player(self, player):
         distance = calculate_distance(self.x, self.y, player.x, player.y)
@@ -605,14 +673,20 @@ class Dragon(Enemy):
             # Check if the new position is within bounds and not a wall
             for _ in range(6):
                 if 0 <= grid_x < number_columns and 0 <= grid_y < number_rows:
-                    if game_maps.grid[grid_y][grid_x] <= 10:  # numbers <= 10 are not walls
-                        # Update the enemy's position if it's not a wall
-                        self.x = new_x
-                        self.y = new_y
+                    if level_3:
+                        if game_maps.grid[grid_y][grid_x] <= 15:  # numbers <= 10 are not walls
+                            # Update the enemy's position if it's not a wall
+                            self.x = new_x
+                            self.y = new_y
+                    else:
+                        if game_maps.grid[grid_y][grid_x] <= 10:  # numbers <= 10 are not walls
+                            # Update the enemy's position if it's not a wall
+                            self.x = new_x
+                            self.y = new_y
 
     def attack_player(self, player):
         distance = calculate_distance(self.x, self.y, player.x, player.y)
-        if distance <= 50:  # Enemy is adjacent to the player
+        if distance <= 200:  # Enemy is adjacent to the player
             # Roll dice for the enemy attack
             attack_rolls = roll_dice(5)
             skulls = count_skulls(attack_rolls)
@@ -623,6 +697,10 @@ class Dragon(Enemy):
             pygame.display.flip()
             # Calculate damage
             damage = max(0, skulls - shields)  # Ensure damage is not negative
+            fire = Fire(player.x, player.y)
+            fires.append(fire)
+
+
             # Apply damage to player
             player.health -= damage
             for i in range(damage):
@@ -662,11 +740,18 @@ class Player:
         grid_y = new_y // grid_size
 
         if 0 <= grid_x < number_columns and 0 <= grid_y < number_rows:
-            if game_maps.grid[grid_y][grid_x] <= 10 or game_maps.grid[grid_y][grid_x] == 15:
-                self.x = new_x
-                self.y = new_y
-                player.movement -= 1
-                return True
+            if level_3:
+                if game_maps.grid[grid_y][grid_x] <= 15 or game_maps.grid[grid_y][grid_x] >= 20:
+                    self.x = new_x
+                    self.y = new_y
+                    player.movement -= 1
+                    return True
+            else:
+                if game_maps.grid[grid_y][grid_x] <= 10 or game_maps.grid[grid_y][grid_x] >= 15:
+                    self.x = new_x
+                    self.y = new_y
+                    player.movement -= 1
+                    return True
         return False
 
     def load_items(self):
@@ -711,7 +796,6 @@ class Player:
 
         with open('items.txt', 'w') as inv:
             inv.writelines(lines)
-
 
     def reset_items(self):
         with open('items.txt', 'r') as inv:
@@ -774,19 +858,38 @@ class Player:
                     self.search = int(maxsearch_inventory)
         inv.close()
 
+
 def draw_floor_tiles():
     for row in range(number_rows):
         for col in range(number_columns):
-            if game_maps.grid[row][col] <= 10:
-                random_floor_tile = tile_dict[game_maps.grid[row][col]]
-                screen.blit(random_floor_tile, (col * grid_size, row * grid_size))
-            elif 11 <= game_maps.grid[row][col] <= 14:
-                random_wall_tile = tile_dict[game_maps.grid[row][col]]
-                screen.blit(random_wall_tile, (col * grid_size, row * grid_size))
-            elif game_maps.grid[row][col] == 15:
-                screen.blit(stairs_img, (col * grid_size, row * grid_size))
-            elif game_maps.grid[row][col] == 16:
-                screen.blit(chain_img, (col * grid_size, row * grid_size))
+            if level_3:
+                if game_maps.grid[row][col] <= 5:
+                    random_floor_tile = colour_tile_dict[game_maps.grid[row][col]]
+                    screen.blit(random_floor_tile, (col * grid_size, row * grid_size))
+                elif 6 <= game_maps.grid[row][col] <= 10:
+                    random_wall_tile = colour_tile_dict[game_maps.grid[row][col]]
+                    screen.blit(random_wall_tile, (col * grid_size, row * grid_size))
+                elif 11 <= game_maps.grid[row][col] <= 15:
+                    random_wall_tile = colour_tile_dict[game_maps.grid[row][col]]
+                    screen.blit(random_wall_tile, (col * grid_size, row * grid_size))
+                elif 16 <= game_maps.grid[row][col] <= 19:
+                    random_wall_tile = colour_tile_dict[game_maps.grid[row][col]]
+                    screen.blit(random_wall_tile, (col * grid_size, row * grid_size))
+                elif game_maps.grid[row][col] == 20:
+                    screen.blit(stairs_img, (col * grid_size, row * grid_size))
+                elif game_maps.grid[row][col] == 21:
+                    screen.blit(chain_img, (col * grid_size, row * grid_size))
+            else:
+                if game_maps.grid[row][col] <= 10:
+                    random_floor_tile = tile_dict[game_maps.grid[row][col]]
+                    screen.blit(random_floor_tile, (col * grid_size, row * grid_size))
+                elif 11 <= game_maps.grid[row][col] <= 14:
+                    random_wall_tile = tile_dict[game_maps.grid[row][col]]
+                    screen.blit(random_wall_tile, (col * grid_size, row * grid_size))
+                elif game_maps.grid[row][col] == 15:
+                    screen.blit(stairs_img, (col * grid_size, row * grid_size))
+                elif game_maps.grid[row][col] == 16:
+                    screen.blit(chain_img, (col * grid_size, row * grid_size))
 
 
 def clear_floor_tiles():
@@ -795,7 +898,7 @@ def clear_floor_tiles():
             if game_maps.grid[row][col] <= 10:
                 random_floor_tile = tile_dict[game_maps.grid[row][col]]
                 screen.blit(random_floor_tile, (col * grid_size, row * grid_size))
-            elif 11 <= game_maps.grid[row][col] <= 14:
+            elif 11 <= game_maps.grid[row][col] <= 21:
                 game_maps.grid[row][col] = rd.randint(1, 10)
                 random_floor_tile = tile_dict[game_maps.grid[row][col]]
                 screen.blit(random_floor_tile, (col * grid_size, row * grid_size))
@@ -930,6 +1033,32 @@ def search():
             pass
 
 
+def load_songs(directory):
+    songs = []
+    for filename in os.listdir(directory):
+        if filename.endswith(".mp3"):
+            songs.append(os.path.join(directory, filename))
+    return songs
+
+
+def play_random_song(songs):
+    random_song = rd.choice(songs)
+    pygame.mixer.music.load(random_song)
+    pygame.mixer.music.play()
+
+
+def check_big_battle_over():
+    if len(enemies) == 0:
+        game_maps.grid[14][18] = rd.randint(1, 5)
+        game_maps.grid[15][18] = rd.randint(1, 5)
+        game_maps.grid[14][19] = rd.randint(1, 5)
+        game_maps.grid[1][14] = rd.randint(1, 5)
+        game_maps.grid[15][19] = 20
+        return 0
+    else:
+        return 1
+
+
 # menu_music = pygame.mixer.Sound("assets/audio/Hero Quest Amiga Theme.mp3")
 def display_everything():
     screen.fill((0, 0, 0))
@@ -943,6 +1072,8 @@ def display_everything():
     draw_grid()
     display_abilities(player.movement, player.attack, player.search, player.health, player.potion, player.loot)
     screen.blit(player.player_img, (player.x, player.y))
+    for fire in fires:
+        fire.draw(screen)
     for enemy in enemies:
         enemy.draw(screen)
     for door in doors:
@@ -1012,6 +1143,7 @@ def mission_select_screen():
     screen.blit(mission_0_button, (width / 2 - 122, 400))
     screen.blit(mission_1_button, (width / 2 - 122, 460))
     screen.blit(mission_2_button, (width / 2 - 122, 520))
+    screen.blit(mission_3_button, (width / 2 - 122, 580))
     pygame.display.flip()
     while mission_select_screen_view:
         for event in pygame.event.get():
@@ -1022,18 +1154,23 @@ def mission_select_screen():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if mission_0_button_rect.collidepoint(event.pos):
                     click_sound.play()
-                    clear_floor_tiles()
+                    draw_floor_tiles()
                     return level_0
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if mission_1_button_rect.collidepoint(event.pos):
                     click_sound.play()
-                    clear_floor_tiles()
+                    draw_floor_tiles()
                     return level_1
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if mission_2_button_rect.collidepoint(event.pos):
                     click_sound.play()
-                    clear_floor_tiles()
+                    draw_floor_tiles()
                     return level_2
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if mission_3_button_rect.collidepoint(event.pos):
+                    click_sound.play()
+                    draw_floor_tiles()
+                    return level_3
 
 
 def store_screen():
@@ -1115,17 +1252,43 @@ while run:
     level_0 = 1
     level_1 = 2
     level_2 = 3
+    level_3 = 4
 
     if main_menu_view:
         main_menu()
     chosen_map = mission_select_screen()
     if chosen_map == 1:
         mission_selected = True
+        level_0 = True
+        level_1 = False
+        level_2 = False
+        level_3 = False
+        clear_floor_tiles()
+        chosen_map = level_0
     if chosen_map == 2:
         mission_selected = True
+        level_0 = False
+        level_1 = True
+        level_2 = False
+        level_3 = False
+        clear_floor_tiles()
+        chosen_map = level_1
     if chosen_map == 3:
         mission_selected = True
-
+        level_0 = False
+        level_1 = False
+        level_2 = True
+        level_3 = False
+        clear_floor_tiles()
+        chosen_map = level_2
+    if chosen_map == 4:
+        mission_selected = True
+        level_0 = False
+        level_1 = False
+        level_2 = False
+        level_3 = True
+        clear_floor_tiles()
+        chosen_map = level_3
 
     # Setting default values for new game
     movement_phase = True
@@ -1156,7 +1319,8 @@ while run:
     room15closed = True
 
     if chosen_map == level_0:
-        pygame.mixer.music.load("assets/audio/Atlantis Rage - Jimena Contreras.mp3")
+        songs = load_songs(directory)
+        play_random_song(songs)
         game_maps.game_map_0()
         player_pos = [150, 300]
         player = Player(150, 300, 50)
@@ -1167,6 +1331,7 @@ while run:
         chests = []
         barrels = []
         crates = []
+        fires = []
 
         door1 = Door(100, 400, door_ns)
         doors.append(door1)
@@ -1200,10 +1365,10 @@ while run:
         potion_message = 0
         attack_message = 0
         exit_message = 0
-        pygame.mixer.music.play(loops=-1)
 
     if chosen_map == level_1:
-        pygame.mixer.music.load("assets/audio/Atlantis Rage - Jimena Contreras.mp3")
+        songs = load_songs(directory)
+        play_random_song(songs)
         game_maps.game_map_1()
         player_pos = [450, 350]
         player = Player(450, 350, 50)
@@ -1215,6 +1380,7 @@ while run:
         chests = []
         barrels = []
         crates = []
+        fires = []
         arrow1 = 0
         arrow2 = 0
         arrow3 = 0
@@ -1263,14 +1429,15 @@ while run:
         dragon = 'is coming'
         dragon_dead = 0
         start_message = 0
-        pygame.mixer.music.play(loops=-1)
 
     if chosen_map == level_2:
-        pygame.mixer.music.load("assets/audio/Atlantis Rage - Jimena Contreras.mp3")
+        songs = load_songs(directory)
+        play_random_song(songs)
         game_maps.game_map_2()
         player_pos = [0, 0]
         player = Player(0, 0, 50)
         player.load_items()
+        fires = []
         enemies = []
         doors = []
         tables = []
@@ -1316,7 +1483,53 @@ while run:
         dragon = 'is coming'
         dragon_dead = 0
         start_message = 0
-        pygame.mixer.music.play(loops=-1)
+
+    if chosen_map == level_3:
+        songs = load_songs(directory)
+        play_random_song(songs)
+        game_maps.game_map_3()
+        player_pos = [50, 600]
+        # player = Player(750, 600, 50)
+        player = Player(750, 50, 50)
+        player.load_items()
+        enemies = []
+        doors = []
+        tables = []
+        chests = []
+        barrels = []
+        crates = []
+        fires = []
+        door1 = Door(50, 500, door_ew)
+        doors.append(door1)
+        door2 = Door(50, 200, door_ew)
+        doors.append(door2)
+        door3 = Door(200, 50, door_ns)
+        doors.append(door3)
+        door4 = Door(350, 200, door_ew)
+        doors.append(door4)
+        door5 = Door(300, 500, door_ew)
+        doors.append(door5)
+        door6 = Door(450, 600, door_ns)
+        doors.append(door6)
+        door7 = Door(600, 500, door_ew)
+        doors.append(door7)
+        door8 = Door(550, 200, door_ew)
+        doors.append(door8)
+        door9 = Door(700, 50, door_ns)
+        doors.append(door9)
+        door10 = 0
+        door11 = 0
+        door12 = 0
+        door13 = 0
+        door14 = 0
+        door15 = 0
+        door16 = 0
+        door17 = 0
+        big_battle = False
+        dragon_exists = False
+        dragon = 'is coming'
+        dragon_dead = 0
+        start_message = 0
 
         def level_2_win_condition():
             if dragon not in enemies and player.x == 0 and player.y == 0:
@@ -1331,6 +1544,8 @@ while run:
             player.reset_items()
             main_menu()
             mission_selected = False
+        if not pygame.mixer.music.get_busy():
+            play_random_song(songs)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 player.save_items()
@@ -1415,6 +1630,22 @@ while run:
                         barrels = []
                         crates = []
                         dragon_dead -= 1
+
+                # level 3 logic
+                if chosen_map == level_3 and big_battle == True:
+                    big_battle = check_big_battle_over()
+                if chosen_map == level_3 and player.x == 0 and player.y == 750 or chosen_map == level_3 and player.x == 950 and player.y == 750:
+                    display_message(quest_complete)
+                    player.save_items()
+                    main_menu()
+                    enemies = []
+                    doors = []
+                    tables = []
+                    chests = []
+                    barrels = []
+                    crates = []
+                    mission_selected = False
+
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if move_button_rect.collidepoint(event.pos):
                         movement_phase = True
@@ -1810,6 +2041,463 @@ while run:
                         enemies.append(goblin)
                         barrel5 = Barrel(650, 0, barrel_img, 0)
                         barrels.append(barrel5)
+
+                    # ADD LEVEL 3 DOOR LOGIC HERE AFTER PLANNING THE LEVEL LAYOUT
+
+                    if door1 not in doors and room1closed and chosen_map == level_3:
+                        room1closed = False
+                        spawn_value3_1 = rd.randint(1, 3)
+                        if spawn_value3_1 == 1:
+                            goblin = Goblin(50, 300)
+                            enemies.append(goblin)
+                            goblin = Goblin(150, 350)
+                            enemies.append(goblin)
+                            goblin = Goblin(50, 450)
+                            enemies.append(goblin)
+                            crate = Crate(100, 350, chest_img_left, 0)
+                            crates.append(crate)
+                        if spawn_value3_1 == 2:
+                            skeleton1 = Skeleton(100, 350)
+                            enemies.append(skeleton1)
+                            barrel = Barrel(150, 300, barrel_img, 0)
+                            barrels.append(barrel)
+                            barrel = Barrel(150, 350, barrel_img, 0)
+                            barrels.append(barrel)
+                            barrel = Barrel(150, 400, barrel_img, 0)
+                            barrels.append(barrel)
+                        if spawn_value3_1 == 3:
+                            chaos_warrior1 = ChaosWarrior(100, 350)
+                            enemies.append(chaos_warrior1)
+                            chest = Chest(50, 350, chest_img_right, 0)
+                            chests.append(chest)
+                        for enemy in enemies:
+                            enemy.draw(screen)
+
+                    if door2 not in doors and room2closed and chosen_map == level_3:
+                        room2closed = False
+                        spawn_value3_2 = rd.randint(1, 3)
+                        if spawn_value3_2 == 1:
+                            if player.x == 50 and player.y == 50:
+                                activate_arrow_trap()
+                            if player.x == 100 and player.y == 100:
+                                activate_arrow_trap()
+                            skeleton = Skeleton(50, 100)
+                            enemies.append(skeleton)
+                            goblin = Goblin(150, 0)
+                            enemies.append(goblin)
+                            crate = Crate(50, 0, chest_img_down, 0)
+                            crates.append(crate)
+                        if spawn_value3_2 == 2:
+                            if player.x == 100 and player.y == 50:
+                                activate_arrow_trap()
+                            if player.x == 150 and player.y == 100:
+                                activate_arrow_trap()
+                            skeleton = Skeleton(0, 0)
+                            enemies.append(skeleton)
+                            skeleton = Skeleton(50, 50)
+                            enemies.append(skeleton)
+                            skeleton = Skeleton(0, 100)
+                            enemies.append(skeleton)
+                            skeleton = Skeleton(50, 150)
+                            enemies.append(skeleton)
+                        if spawn_value3_2 == 3:
+                            if player.x == 50 and player.y == 150:
+                                activate_arrow_trap()
+                            goblin = Goblin(150, 150)
+                            enemies.append(goblin)
+                            goblin = Goblin(0, 150)
+                            enemies.append(goblin)
+                            goblin = Goblin(0, 100)
+                            enemies.append(goblin)
+                            goblin = Goblin(150, 50)
+                            enemies.append(goblin)
+                        for enemy in enemies:
+                            enemy.draw(screen)
+
+                    if door3 not in doors and room3closed and chosen_map == level_3:
+                        room3closed = False
+                        spawn_value3_3 = rd.randint(1, 3)
+                        if spawn_value3_3 == 1:
+                            table = Table(300, 50, table_ns, 1)
+                            tables.append(table)
+                            table = Table(350, 50, table_ns, 1)
+                            tables.append(table)
+                            table = Table(300, 50, table_ew, 1)
+                            tables.append(table)
+                            table = Table(300, 100, table_ew, 1)
+                            tables.append(table)
+                            chaos = ChaosWarrior(250, 0)
+                            enemies.append(chaos)
+                            chaos = ChaosWarrior(250, 200)
+                            enemies.append(chaos)
+                            chaos = ChaosWarrior(400, 50)
+                            enemies.append(chaos)
+                        if spawn_value3_3 == 2:
+                            table = Table(300, 50, table_ns, 1)
+                            tables.append(table)
+                            table = Table(350, 50, table_ns, 1)
+                            tables.append(table)
+                            table = Table(300, 50, table_ew, 1)
+                            tables.append(table)
+                            table = Table(300, 100, table_ew, 1)
+                            tables.append(table)
+                            chaos = ChaosWarrior(300, 0)
+                            enemies.append(chaos)
+                            chaos = ChaosWarrior(250, 200)
+                            enemies.append(chaos)
+                        if spawn_value3_3 == 3:
+                            table = Table(300, 50, table_ns, 1)
+                            tables.append(table)
+                            table = Table(350, 50, table_ns, 1)
+                            tables.append(table)
+                            table = Table(300, 50, table_ew, 1)
+                            tables.append(table)
+                            table = Table(300, 100, table_ew, 1)
+                            tables.append(table)
+                            chaos = ChaosWarrior(350, 0)
+                            enemies.append(chaos)
+                            chaos = ChaosWarrior(250, 200)
+                            enemies.append(chaos)
+                            chaos = ChaosWarrior(400, 50)
+                            enemies.append(chaos)
+                        for enemy in enemies:
+                            enemy.draw(screen)
+
+                    if door4 not in doors and room4closed and chosen_map == level_3:
+                        room4closed = False
+                        spawn_value3_4 = rd.randint(1, 3)
+                        if spawn_value3_4 == 1:
+                            goblin = Goblin(250, 350)
+                            enemies.append(goblin)
+                            goblin = Goblin(400, 350)
+                            enemies.append(goblin)
+                            goblin = Goblin(250, 450)
+                            enemies.append(goblin)
+                            goblin = Goblin(400, 300)
+                            enemies.append(goblin)
+                            crate = Crate(300, 350, crate_img, 0)
+                            crates.append(crate)
+                            barrel = Barrel(350, 350, barrel_img, 0)
+                            barrels.append(barrel)
+                        if spawn_value3_4 == 2:
+                            goblin = Goblin(250, 350)
+                            enemies.append(goblin)
+                            goblin = Goblin(400, 350)
+                            enemies.append(goblin)
+                            crate = Crate(300, 350, crate_img, 0)
+                            crates.append(crate)
+                            barrel = Barrel(350, 350, barrel_img, 0)
+                            barrels.append(barrel)
+                        if spawn_value3_4 == 3:
+                            goblin = Goblin(250, 350)
+                            enemies.append(goblin)
+                            goblin = Goblin(400, 350)
+                            enemies.append(goblin)
+                            if player.x == 250 and player.y == 300:
+                                activate_arrow_trap()
+                            if player.x == 250 and player.y == 400:
+                                activate_arrow_trap()
+                            if player.x == 300 and player.y == 300:
+                                activate_arrow_trap()
+                            if player.x == 300 and player.y == 400:
+                                activate_arrow_trap()
+                            if player.x == 350 and player.y == 300:
+                                activate_arrow_trap()
+                            if player.x == 350 and player.y == 400:
+                                activate_arrow_trap()
+                            if player.x == 400 and player.y == 300:
+                                activate_arrow_trap()
+                            if player.x == 400 and player.y == 400:
+                                activate_arrow_trap()
+                            crate = Crate(300, 350, crate_img, 0)
+                            crates.append(crate)
+                            barrel = Barrel(350, 350, barrel_img, 0)
+                            barrels.append(barrel)
+                        for enemy in enemies:
+                            enemy.draw(screen)
+
+                    if door5 not in doors and room5closed and chosen_map == level_3:
+                        room5closed = False
+                        chaos = ChaosWarrior(300, 50)
+                        enemies.append(chaos)
+                        chaos = ChaosWarrior(300, 100)
+                        enemies.append(chaos)
+                        chaos = ChaosWarrior(350, 50)
+                        enemies.append(chaos)
+                        chaos = ChaosWarrior(350, 100)
+                        enemies.append(chaos)
+                        skeleton = Skeleton(50, 100)
+                        enemies.append(skeleton)
+                        goblin = Goblin(150, 0)
+                        enemies.append(goblin)
+                        spawn_value3_5 = rd.randint(1, 3)
+                        if spawn_value3_5 == 1:
+                            skeleton = Skeleton(300, 700)
+                            enemies.append(skeleton)
+                            skeleton = Skeleton(350, 700)
+                            enemies.append(skeleton)
+                            chest = Chest(300, 750, chest_img_up, 0)
+                            chests.append(chest)
+                            chest = Chest(350, 750, chest_img_up, 0)
+                            chests.append(chest)
+                        if spawn_value3_5 == 2:
+                            skeleton = Skeleton(300, 700)
+                            enemies.append(skeleton)
+                            skeleton = Skeleton(350, 700)
+                            enemies.append(skeleton)
+                            skeleton = Skeleton(300, 650)
+                            enemies.append(skeleton)
+                            chest = Chest(300, 750, chest_img_up, 0)
+                            chests.append(chest)
+                            chest = Chest(350, 750, chest_img_up, 0)
+                            chests.append(chest)
+                            chest = Chest(250, 650, chest_img_right, 0)
+                            chests.append(chest)
+                        if spawn_value3_5 == 3:
+                            skeleton = Skeleton(300, 700)
+                            enemies.append(skeleton)
+                            skeleton = Skeleton(350, 700)
+                            enemies.append(skeleton)
+                            skeleton = Skeleton(300, 650)
+                            enemies.append(skeleton)
+                            skeleton = Skeleton(400, 700)
+                            enemies.append(skeleton)
+                            chest = Chest(300, 750, chest_img_up, 0)
+                            chests.append(chest)
+                            chest = Chest(350, 750, chest_img_up, 0)
+                            chests.append(chest)
+                            chest = Chest(250, 650, chest_img_right, 0)
+                            chests.append(chest)
+                            chest = Chest(400, 750, chest_img_up, 0)
+                            chests.append(chest)
+                        for enemy in enemies:
+                            enemy.draw(screen)
+
+                    if door6 not in doors and room6closed and chosen_map == level_3:
+                        room6closed = False
+                        barrel = Barrel(650, 750, barrel_img, 0)
+                        barrels.append(barrel)
+                        skeleton = Skeleton(300, 700)
+                        enemies.append(skeleton)
+                        spawn_value3_6 = rd.randint(1, 3)
+                        if spawn_value3_6 == 1:
+                            goblin = Goblin(500, 550)
+                            enemies.append(goblin)
+                            goblin = Goblin(550, 550)
+                            enemies.append(goblin)
+                            goblin = Goblin(600, 550)
+                            enemies.append(goblin)
+                            goblin = Goblin(650, 550)
+                            enemies.append(goblin)
+                            goblin = Goblin(500, 750)
+                            enemies.append(goblin)
+                            goblin = Goblin(550, 750)
+                            enemies.append(goblin)
+                            goblin = Goblin(600, 750)
+                            enemies.append(goblin)
+                            goblin = Goblin(650, 650)
+                            enemies.append(goblin)
+                        if spawn_value3_6 == 2:
+                            goblin = Goblin(500, 550)
+                            enemies.append(goblin)
+                            goblin = Goblin(600, 550)
+                            enemies.append(goblin)
+                            goblin = Goblin(650, 550)
+                            enemies.append(goblin)
+                            goblin = Goblin(500, 750)
+                            enemies.append(goblin)
+                            goblin = Goblin(550, 750)
+                            enemies.append(goblin)
+                            goblin = Goblin(600, 750)
+                            enemies.append(goblin)
+                        if spawn_value3_6 == 3:
+                            goblin = Goblin(550, 550)
+                            enemies.append(goblin)
+                            goblin = Goblin(650, 550)
+                            enemies.append(goblin)
+                            goblin = Goblin(500, 750)
+                            enemies.append(goblin)
+                            goblin = Goblin(600, 750)
+                            enemies.append(goblin)
+                        for enemy in enemies:
+                            enemy.draw(screen)
+
+                    if door7 not in doors and room7closed and chosen_map == level_3:
+                        room7closed = False
+                        table = Table(550, 300, table_ns, 1)
+                        tables.append(table)
+                        barrel = Barrel(600, 350, barrel_img, 0)
+                        barrels.append(barrel)
+                        spawn_value3_7 = rd.randint(1, 3)
+                        if spawn_value3_7 == 1:
+                            chaos = ChaosWarrior(500, 300)
+                            enemies.append(chaos)
+                            chaos = ChaosWarrior(500, 400)
+                            enemies.append(chaos)
+                            chaos = ChaosWarrior(600, 300)
+                            enemies.append(chaos)
+                            chaos = ChaosWarrior(650, 400)
+                            enemies.append(chaos)
+                        if spawn_value3_7 == 2:
+                            chaos = ChaosWarrior(500, 300)
+                            enemies.append(chaos)
+                            chaos = ChaosWarrior(500, 400)
+                            enemies.append(chaos)
+                            chaos = ChaosWarrior(600, 300)
+                            enemies.append(chaos)
+                        if spawn_value3_7 == 3:
+                            chaos = ChaosWarrior(500, 300)
+                            enemies.append(chaos)
+                            chaos = ChaosWarrior(650, 400)
+                            enemies.append(chaos)
+                        for enemy in enemies:
+                            enemy.draw(screen)
+
+                    if door8 not in doors and room8closed and chosen_map == level_3:
+                        room8closed = False
+                        goblin = Goblin(550, 550)
+                        enemies.append(goblin)
+                        goblin = Goblin(650, 550)
+                        enemies.append(goblin)
+                        goblin = Goblin(500, 750)
+                        enemies.append(goblin)
+                        goblin = Goblin(600, 750)
+                        enemies.append(goblin)
+                        chaos = ChaosWarrior(300, 50)
+                        enemies.append(chaos)
+                        chaos = ChaosWarrior(300, 100)
+                        enemies.append(chaos)
+                        chaos = ChaosWarrior(350, 50)
+                        enemies.append(chaos)
+                        chaos = ChaosWarrior(350, 100)
+                        enemies.append(chaos)
+                        skeleton = Skeleton(50, 100)
+                        enemies.append(skeleton)
+                        goblin = Goblin(150, 0)
+                        enemies.append(goblin)
+                        spawn_value3_8 = rd.randint(1, 3)
+                        if spawn_value3_8 == 1:
+                            if player.x == 650 and player.y == 150:
+                                activate_arrow_trap()
+                            if player.x == 600 and player.y == 100:
+                                activate_arrow_trap()
+                            if player.x == 550 and player.y == 50:
+                                activate_arrow_trap()
+                            if player.x == 500 and player.y == 0:
+                                activate_arrow_trap()
+                        if spawn_value3_8 >= 2:
+                            if player.x == 600 and player.y == 50:
+                                activate_arrow_trap()
+                    for enemy in enemies:
+                        enemy.draw(screen)
+
+                    if door9 not in doors and room9closed and chosen_map == level_3 and player.x == 750:
+                        room9closed = False
+                        spawn_value3_9 = rd.randint(1, 4)
+                        enemies = []
+                        big_battle = True
+                        if spawn_value3_9 == 1:
+                            for i in range(0, 16):
+                                for j in range(15, 20):
+                                    game_maps.grid[i][j] = rd.randint(11, 15)
+                            game_maps.grid[14][18] = rd.randint(16, 19)
+                            game_maps.grid[15][18] = rd.randint(16, 19)
+                            game_maps.grid[14][19] = rd.randint(16, 19)
+                            game_maps.grid[1][14] = rd.randint(16, 19)
+                            dragon = Dragon(900, 600)
+                            enemies.append(dragon)
+                            dragon = Dragon(800, 300)
+                            enemies.append(dragon)
+                            dragon = Dragon(900, 150)
+                            enemies.append(dragon)
+                        if spawn_value3_9 == 2:
+                            for i in range(0, 16):
+                                for j in range(15, 20):
+                                    game_maps.grid[i][j] = rd.randint(1, 5)
+                            game_maps.grid[14][18] = rd.randint(16, 19)
+                            game_maps.grid[15][18] = rd.randint(16, 19)
+                            game_maps.grid[14][19] = rd.randint(16, 19)
+                            game_maps.grid[1][14] = rd.randint(16, 19)
+                            chaos = ChaosWarrior(800, 150)
+                            enemies.append(chaos)
+                            chaos = ChaosWarrior(850, 200)
+                            enemies.append(chaos)
+                            chaos = ChaosWarrior(900, 250)
+                            enemies.append(chaos)
+                            chaos = ChaosWarrior(950, 300)
+                            enemies.append(chaos)
+                            chaos = ChaosWarrior(900, 450)
+                            enemies.append(chaos)
+                            goblin = Goblin(800, 550)
+                            enemies.append(goblin)
+                            goblin = Goblin(850, 450)
+                            enemies.append(goblin)
+                            goblin = Goblin(950, 550)
+                            enemies.append(goblin)
+                        if spawn_value3_9 == 3:
+                            for i in range(0, 16):
+                                for j in range(15, 20):
+                                    game_maps.grid[i][j] = rd.randint(6, 10)
+                            game_maps.grid[14][18] = rd.randint(16, 19)
+                            game_maps.grid[15][18] = rd.randint(16, 19)
+                            game_maps.grid[14][19] = rd.randint(16, 19)
+                            game_maps.grid[1][14] = rd.randint(16, 19)
+                            skeleton = Skeleton(950, 100)
+                            enemies.append(skeleton)
+                            skeleton = Skeleton(950, 200)
+                            enemies.append(skeleton)
+                            skeleton = Skeleton(950, 300)
+                            enemies.append(skeleton)
+                            skeleton = Skeleton(950, 400)
+                            enemies.append(skeleton)
+                            skeleton = Skeleton(950, 500)
+                            enemies.append(skeleton)
+                            skeleton = Skeleton(900, 600)
+                            enemies.append(skeleton)
+                            skeleton = Skeleton(900, 700)
+                            enemies.append(skeleton)
+                            skeleton = Skeleton(900, 800)
+                            enemies.append(skeleton)
+                            skeleton = Skeleton(900, 900)
+                            enemies.append(skeleton)
+                            skeleton = Skeleton(750, 500)
+                            enemies.append(skeleton)
+                            skeleton = Skeleton(750, 600)
+                            enemies.append(skeleton)
+                            skeleton = Skeleton(750, 700)
+                            enemies.append(skeleton)
+                            skeleton = Skeleton(750, 800)
+                            enemies.append(skeleton)
+                            skeleton = Skeleton(750, 900)
+                            enemies.append(skeleton)
+                        if spawn_value3_9 == 4:
+                            for i in range(2, 14):
+                                for j in range(17, 18):
+                                    game_maps.grid[i][j] = rd.randint(6, 10)
+                            game_maps.grid[14][18] = rd.randint(16, 19)
+                            game_maps.grid[15][18] = rd.randint(16, 19)
+                            game_maps.grid[14][19] = rd.randint(16, 19)
+                            game_maps.grid[1][14] = rd.randint(16, 19)
+                            dragon = Dragon(900, 600)
+                            enemies.append(dragon)
+                            skeleton = Skeleton(950, 200)
+                            enemies.append(skeleton)
+                            skeleton = Skeleton(950, 300)
+                            enemies.append(skeleton)
+                            skeleton = Skeleton(950, 400)
+                            enemies.append(skeleton)
+                            goblin = Goblin(800, 550)
+                            enemies.append(goblin)
+                            goblin = Goblin(850, 450)
+                            enemies.append(goblin)
+                            goblin = Goblin(950, 550)
+                            enemies.append(goblin)
+                            chaos = ChaosWarrior(900, 250)
+                            enemies.append(chaos)
+                            chaos = ChaosWarrior(950, 300)
+                            enemies.append(chaos)
+                        for enemy in enemies:
+                            enemy.draw(screen)
 
                     if player.movement == 0:
                         movement_phase = False
