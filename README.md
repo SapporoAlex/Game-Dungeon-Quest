@@ -20,7 +20,7 @@ Welcome to the repository for Dungeon Quest, a grid-based dungeon crawler game c
 ## Features
 - A title screen with menus.
 - Dynamic Gameplay: Move through the dungeon, engage in combat with enemies, and search for treasures.
-- 3 Levels: The 3 levels include a brief totorial, a 2nd level where you must choose a path full of random enemies and arrow traps, and a 3rd level where you must hunt down and defeat the red dragon. The game is designed to allow for easy adaptation and expansion. New levels can be added to keep the game exciting.
+- 4 Levels: The 4 levels include a brief totorial, a 2nd level where you must choose a path full of random enemies and arrow traps, a 3rd level where you must hunt down and defeat the red dragon, and a 4th level that should only be attempted if you have upgraded your character and are ready for a rampage. The game is designed to allow for easy adaptation and expansion. New levels can be added to keep the game exciting.
 - A store you can visit between levels to upgrade your character buy spending gold.
 - Various Characters: Start with a barbarian character, but the game is designed to allow adding new player characters, such as the rogue, with assets already included in the assets folder.
 - Interactive UI: Utilize buttons like move, attack, search, and more to interact with the game world.
@@ -50,7 +50,7 @@ Use the arrow keys to move your character around the grid.
 - Goal: Follow the level's on-screen instructions to complete the goal of the level.
 
 ## Enemies
-Encounter various enemies like skeletons, goblins, chaos warriors, arrow traps and even a dragon. Each enemy type has its unique behavior and attack strategy. Beware though, the chaos warrior has 2 HP, and the dragon has 4 HP. Enemies will pursue you 1 tile per enemy movement phase.
+Encounter various enemies like skeletons, goblins, chaos warriors, arrow traps and even a dragon. Each enemy type has its unique behavior and attack strategy. Beware though, the chaos warrior has 2 HP, and the dragon has 4 HP, and attacks from range with fire balls. Enemies will pursue you 1 tile per enemy movement phase.
 
 <img src="assets/images/skeleton_img_down.png" width="50">    <img src="assets/images/goblin_img_down.png" width="50">    <img src="assets/images/chaos_warrior_down_img.png" width="50">    <img src="assets/images/dragon_down_img.png" width="100">
 
