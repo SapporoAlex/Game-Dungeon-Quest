@@ -316,3 +316,135 @@ def game_map_2():
     grid[14][17] = rd.randint(11, 14)
     grid[14][18] = rd.randint(11, 14)
     grid[15][8] = rd.randint(11, 14)
+
+
+def game_map_3():
+    #b1 green
+    grid[0][0] = rd.randint(1, 5)
+    grid[0][1] = rd.randint(1, 5)
+    grid[0][2] = rd.randint(1, 5)
+    grid[0][3] = rd.randint(1, 5)
+    grid[1][0] = rd.randint(1, 5)
+    grid[1][1] = rd.randint(1, 5)
+    grid[1][2] = rd.randint(1, 5)
+    grid[1][3] = rd.randint(1, 5)
+    grid[2][0] = rd.randint(1, 5)
+    grid[2][1] = rd.randint(1, 5)
+    grid[2][2] = rd.randint(1, 5)
+    grid[2][3] = rd.randint(1, 5)
+    grid[3][0] = rd.randint(1, 5)
+    grid[3][1] = rd.randint(1, 5)
+    grid[3][2] = rd.randint(1, 5)
+    grid[3][3] = rd.randint(1, 5)
+
+    # b2 red
+    for i in range(4):
+        for j in range(5, 9):
+            grid[i][j] = rd.randint(11, 15)
+
+    # b3 blue
+    for i in range(4):
+        for j in range(10, 14):
+            grid[i][j] = rd.randint(6, 10)
+
+    # b4 red
+    for i in range(5, 10):
+        for j in range(5):
+            grid[i][j] = rd.randint(11, 15)
+
+    # b5 green
+
+    grid[5][5] = rd.randint(1, 5)
+    grid[5][6] = rd.randint(1, 5)
+    grid[5][7] = rd.randint(1, 5)
+    grid[5][8] = rd.randint(1, 5)
+    grid[5][9] = rd.randint(1, 5)
+    grid[6][5] = rd.randint(1, 5)
+    grid[6][6] = rd.randint(1, 5)
+    grid[6][7] = rd.randint(1, 5)
+    grid[6][8] = rd.randint(1, 5)
+    grid[6][9] = rd.randint(1, 5)
+    grid[7][5] = rd.randint(1, 5)
+    grid[7][6] = rd.randint(1, 5)
+    grid[7][7] = rd.randint(1, 5)
+    grid[7][8] = rd.randint(1, 5)
+    grid[7][9] = rd.randint(1, 5)
+    grid[8][5] = rd.randint(1, 5)
+    grid[8][6] = rd.randint(1, 5)
+    grid[8][7] = rd.randint(1, 5)
+    grid[8][8] = rd.randint(1, 5)
+    grid[8][9] = rd.randint(1, 5)
+    grid[9][5] = rd.randint(1, 5)
+    grid[9][6] = rd.randint(1, 5)
+    grid[9][7] = rd.randint(1, 5)
+    grid[9][8] = rd.randint(1, 5)
+    grid[9][9] = rd.randint(1, 5)
+
+    # b6 red
+    for i in range(5, 10):
+        for j in range(10, 15):
+            grid[i][j] = rd.randint(11, 15)
+
+    # b7 green
+    for i in range(11, 16):
+        for j in range(5):
+            grid[i][j] = rd.randint(1, 5)
+
+    # b8 blue
+    for i in range(11, 16):
+        for j in range(5, 10):
+            grid[i][j] = rd.randint(6, 10)
+
+    #b9 red
+    for i in range(11, 16):
+        for j in range(10, 15):
+            grid[i][j] = rd.randint(11, 15)
+
+    #b10 blue
+    for i in range(0, 16):
+        for j in range(15, 20):
+            grid[i][j] = rd.randint(6, 10)
+
+    for i in range(rd.randrange(10)):
+        grid[rd.randrange(0, 15)][rd.randrange(0, 14)] = 21
+
+    #v wall 1
+    for i in range(0, 1):
+        grid[i][4] = rd.randint(16, 19)
+    for i in range(2, 16):
+        grid[i][4] = rd.randint(16, 19)
+
+    #v wall 2
+    for i in range(0, 12):
+        grid[i][9] = rd.randint(16, 19)
+    for i in range(13, 16):
+        grid[i][9] = rd.randint(16, 19)
+
+    # v wall 3
+    for i in range(0, 1):
+        grid[i][14] = rd.randint(16, 19)
+    for i in range(2, 16):
+        grid[i][14] = rd.randint(16, 19)
+
+    #h wall 1
+    for j in range(0, 1):
+        grid[4][j] = rd.randint(16, 19)
+    for j in range(2, 7):
+        grid[4][j] = rd.randint(16, 19)
+    for j in range(8, 11):
+        grid[4][j] = rd.randint(16, 19)
+    for j in range(12, 14):
+        grid[4][j] = rd.randint(16, 19)
+
+    #h wall 2
+    for j in range(0, 1):
+        grid[10][j] = rd.randint(16, 19)
+    for j in range(2, 6):
+        grid[10][j] = rd.randint(16, 19)
+    for j in range(7, 12):
+        grid[10][j] = rd.randint(16, 19)
+    for j in range(13, 14):
+        grid[10][j] = rd.randint(16, 19)
+
+    grid[15][0] = 20
+    grid[15][19] = 20
