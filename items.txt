@@ -1,2 +1,6 @@
 gold: 0
 healthpotions: 0
+maxhealth: 6
+maxspeed: 8
+maxattack: 1
+maxsearch: 1
