@@ -24,8 +24,8 @@ pygame.mixer.init()
 
 # Constants
 width, height = 1200, 800
-#screen = pygame.display.set_mode((width, height))
-screen = pygame.display.set_mode((width, height), pygame.FULLSCREEN)
+screen = pygame.display.set_mode((width, height))
+#screen = pygame.display.set_mode((width, height), pygame.FULLSCREEN)
 pygame.display.set_caption("Dungeon Quest")
 grid_size = 50
 grid_color = (155, 155, 155)
@@ -1248,6 +1248,13 @@ def store_screen():
                     main_menu()
 
 
+def level_2_win_condition():
+    if dragon not in enemies and player.x == 0 and player.y == 0:
+        return 1
+    else:
+        return 0
+
+
 while run:
     level_0 = 1
     level_1 = 2
@@ -1529,12 +1536,6 @@ while run:
         dragon = 'is coming'
         dragon_dead = 0
         start_message = 0
-
-        def level_2_win_condition():
-            if dragon not in enemies and player.x == 0 and player.y == 0:
-                return 1
-            else:
-                return 0
 
     # Main game loop
     while mission_selected:
@@ -2127,7 +2128,7 @@ while run:
                             tables.append(table)
                             chaos = ChaosWarrior(250, 0)
                             enemies.append(chaos)
-                            chaos = ChaosWarrior(250, 200)
+                            chaos = ChaosWarrior(250, 150)
                             enemies.append(chaos)
                             chaos = ChaosWarrior(400, 50)
                             enemies.append(chaos)
@@ -2142,7 +2143,7 @@ while run:
                             tables.append(table)
                             chaos = ChaosWarrior(300, 0)
                             enemies.append(chaos)
-                            chaos = ChaosWarrior(250, 200)
+                            chaos = ChaosWarrior(250, 150)
                             enemies.append(chaos)
                         if spawn_value3_3 == 3:
                             table = Table(300, 50, table_ns, 1)
@@ -2155,7 +2156,7 @@ while run:
                             tables.append(table)
                             chaos = ChaosWarrior(350, 0)
                             enemies.append(chaos)
-                            chaos = ChaosWarrior(250, 200)
+                            chaos = ChaosWarrior(250, 150)
                             enemies.append(chaos)
                             chaos = ChaosWarrior(400, 50)
                             enemies.append(chaos)
@@ -2467,7 +2468,7 @@ while run:
                             enemies.append(skeleton)
                             skeleton = Skeleton(750, 800)
                             enemies.append(skeleton)
-                            skeleton = Skeleton(750, 900)
+                            skeleton = Skeleton(750, 850)
                             enemies.append(skeleton)
                         if spawn_value3_9 == 4:
                             for i in range(2, 14):
