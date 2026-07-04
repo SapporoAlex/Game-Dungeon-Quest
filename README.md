@@ -80,8 +80,19 @@ python Dungeon Quest.py
 ```
 to start the game.
 
+## Web Version
+Dungeon Quest also ships as a browser port (HTML5 Canvas + vanilla JS) that plays with mouse and keyboard on desktop, and with on-screen touch controls beneath the canvas on mobile. It reuses the same `assets/` folder as the Python version.
+
+To run it, serve the project directory over HTTP (opening `index.html` directly via `file://` won't work because of module/CORS restrictions) and open it in a browser:
+
+```bash
+python3 -m http.server 8000
+```
+
+Then visit `http://localhost:8000/index.html`. Progress (gold, potions, and upgraded stats) is saved to the browser's localStorage instead of `items.txt`.
+
 ## File Structure
-The Dungeon Quest.py file runs the game. The game_maps.py has the tile map information used by the Dungeon Quest.py file to choose the correct tiles for the level. Please feel free to add more levels in this file. the items.txt file stores the amount of gold and health potions the player has in their inventory. This data is loaded and saved at the begining and end of each level. The assets folder contains the images and audio files in seperate folders.
+The Dungeon Quest.py file runs the game. The game_maps.py has the tile map information used by the Dungeon Quest.py file to choose the correct tiles for the level. Please feel free to add more levels in this file. the items.txt file stores the amount of gold and health potions the player has in their inventory. This data is loaded and saved at the begining and end of each level. The assets folder contains the images and audio files in seperate folders. The `index.html`/`css/`/`js/` files are the browser port described above.
 
 ## Contributing
 Contributions to Dungeon Quest are welcome! Whether it's adding new features, creating new levels, or improving the code, feel free to fork the repository and submit a pull request.
