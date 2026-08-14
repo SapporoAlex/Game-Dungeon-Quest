@@ -21,7 +21,26 @@
   </head>
   <body>
     <div id="game-wrap">
-      <canvas id="game-canvas" width="1200" height="800"></canvas>
+      <div id="canvas-stage">
+        <canvas id="game-canvas" width="1200" height="800"></canvas>
+
+        <div id="mission-select-overlay" class="screen-overlay" hidden>
+          <div class="overlay-title">Choose Your Quest</div>
+          <select id="mission-dropdown" class="overlay-select"></select>
+          <div class="overlay-buttons">
+            <button id="mission-back-btn" class="overlay-btn" type="button">
+              Back
+            </button>
+            <button
+              id="mission-start-btn"
+              class="overlay-btn primary"
+              type="button"
+            >
+              Start Quest
+            </button>
+          </div>
+        </div>
+      </div>
 
       <div id="mobile-controls">
         <div class="dpad" id="dpad">

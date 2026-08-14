@@ -12,4 +12,5 @@ export const LEVEL = {
   QUEST_1: "level_1",
   QUEST_2: "level_2",
   RAMPAGE: "level_3",
+  QUEST_4: "level_4",
 };

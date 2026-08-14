@@ -94,27 +94,45 @@ function isTilePassable(gridX, gridY) {
   return gameState.isRampageLevel ? tile <= 15 : tile <= 10;
 }
 
+// In duo mode there are two players on the board at once; every enemy simply
+// goes after whichever one is currently closest. With a single player this
+// trivially resolves to that one player, so classic mode is unaffected.
+function nearestTarget(enemy, players) {
+  let best = players[0];
+  let bestDistance = calculateDistance(enemy.x, enemy.y, best.x, best.y);
+  for (let i = 1; i < players.length; i++) {
+    const distance = calculateDistance(enemy.x, enemy.y, players[i].x, players[i].y);
+    if (distance < bestDistance) {
+      best = players[i];
+      bestDistance = distance;
+    }
+  }
+  return best;
+}
+
 // Shared movement AI for all enemy types: step at most one tile towards the
-// player, provided the player is within [100, 500] px and the destination
-// tile isn't a wall. (Faithful to the original's move_towards_player, which
-// computed the destination once and only ever advanced a single step.)
-function moveTowardsPlayer(enemy, playerX, playerY, spriteKeys) {
-  const distance = calculateDistance(enemy.x, enemy.y, playerX, playerY);
+// nearest player, provided that player is within [100, 500] px and the
+// destination tile isn't a wall. (Faithful to the original's
+// move_towards_player, which computed the destination once and only ever
+// advanced a single step.)
+function moveTowardsPlayer(enemy, players, spriteKeys) {
+  const target = nearestTarget(enemy, players);
+  const distance = calculateDistance(enemy.x, enemy.y, target.x, target.y);
   if (distance > 500 || distance < 100) return;
 
   let dx = 0;
   let dy = 0;
-  if (playerX > enemy.x) {
+  if (target.x > enemy.x) {
     dx = GRID_SIZE;
     enemy.enemyImageKey = spriteKeys.right;
-  } else if (playerX < enemy.x) {
+  } else if (target.x < enemy.x) {
     dx = -GRID_SIZE;
     enemy.enemyImageKey = spriteKeys.left;
   }
-  if (playerY > enemy.y) {
+  if (target.y > enemy.y) {
     dy = GRID_SIZE;
     enemy.enemyImageKey = spriteKeys.down;
-  } else if (playerY < enemy.y) {
+  } else if (target.y < enemy.y) {
     dy = -GRID_SIZE;
     enemy.enemyImageKey = spriteKeys.up;
   }
@@ -130,10 +148,15 @@ function moveTowardsPlayer(enemy, playerX, playerY, spriteKeys) {
   }
 }
 
-// Shared attack resolution: enemy rolls `attackDice`, player always defends
-// with 3 dice. Returns the dice info so the UI can render skulls/shields.
-function enemyAttackPlayer(enemy, player, attackDice, range) {
-  const distance = calculateDistance(enemy.x, enemy.y, player.x, player.y);
+// Shared attack resolution: enemy rolls `attackDice` against the nearest
+// player, who always defends with 3 dice. The original never let enemies
+// attack a player sitting at x <= 50 (the entrance column) - preserved here,
+// now checked against whichever player was actually targeted. Returns the
+// dice info (plus which player got hit) so the UI can render skulls/shields.
+function enemyAttackPlayer(enemy, players, attackDice, range) {
+  const target = nearestTarget(enemy, players);
+  if (target.x <= 50) return null;
+  const distance = calculateDistance(enemy.x, enemy.y, target.x, target.y);
   if (distance > range) return null;
 
   const attackRolls = rollDice(attackDice);
@@ -141,11 +164,11 @@ function enemyAttackPlayer(enemy, player, attackDice, range) {
   const defenseRolls = rollDice(3);
   const shields = countHits(defenseRolls);
   const damage = Math.max(0, skulls - shields);
-  player.health -= damage;
+  target.health -= damage;
   for (let i = 0; i < damage; i++) {
     playRandomSfx(DEATH_SOUND_KEYS);
   }
-  return { attackRolls, defenseRolls, skulls, shields, damage };
+  return { attackRolls, defenseRolls, skulls, shields, damage, target };
 }
 
 class Enemy {
@@ -168,8 +191,8 @@ export class Goblin extends Enemy {
     this.enemyImageKey = "goblin_down_img";
   }
 
-  moveTowardsPlayer(playerX, playerY) {
-    moveTowardsPlayer(this, playerX, playerY, {
+  moveTowardsPlayer(players) {
+    moveTowardsPlayer(this, players, {
       right: "goblin_right_img",
       left: "goblin_left_img",
       down: "goblin_down_img",
@@ -177,8 +200,8 @@ export class Goblin extends Enemy {
     });
   }
 
-  attackPlayer(player) {
-    return enemyAttackPlayer(this, player, 1, 50);
+  attackPlayer(players) {
+    return enemyAttackPlayer(this, players, 1, 50);
   }
 }
 
@@ -189,8 +212,8 @@ export class Skeleton extends Enemy {
     this.enemyImageKey = "skeleton_down_img";
   }
 
-  moveTowardsPlayer(playerX, playerY) {
-    moveTowardsPlayer(this, playerX, playerY, {
+  moveTowardsPlayer(players) {
+    moveTowardsPlayer(this, players, {
       right: "skeleton_right_img",
       left: "skeleton_left_img",
       down: "skeleton_down_img",
@@ -198,8 +221,8 @@ export class Skeleton extends Enemy {
     });
   }
 
-  attackPlayer(player) {
-    return enemyAttackPlayer(this, player, 3, 50);
+  attackPlayer(players) {
+    return enemyAttackPlayer(this, players, 3, 50);
   }
 }
 
@@ -210,8 +233,8 @@ export class ChaosWarrior extends Enemy {
     this.enemyImageKey = "chaos_warrior_down_img";
   }
 
-  moveTowardsPlayer(playerX, playerY) {
-    moveTowardsPlayer(this, playerX, playerY, {
+  moveTowardsPlayer(players) {
+    moveTowardsPlayer(this, players, {
       right: "chaos_warrior_right_img",
       left: "chaos_warrior_left_img",
       down: "chaos_warrior_down_img",
@@ -219,8 +242,8 @@ export class ChaosWarrior extends Enemy {
     });
   }
 
-  attackPlayer(player) {
-    return enemyAttackPlayer(this, player, 3, 50);
+  attackPlayer(players) {
+    return enemyAttackPlayer(this, players, 3, 50);
   }
 }
 
@@ -231,8 +254,8 @@ export class Dragon extends Enemy {
     this.enemyImageKey = "dragon_down_img";
   }
 
-  moveTowardsPlayer(playerX, playerY) {
-    moveTowardsPlayer(this, playerX, playerY, {
+  moveTowardsPlayer(players) {
+    moveTowardsPlayer(this, players, {
       right: "dragon_right_img",
       left: "dragon_left_img",
       down: "dragon_down_img",
@@ -241,36 +264,65 @@ export class Dragon extends Enemy {
   }
 
   // Range 200 (4 tiles): dragon breathes fire from a distance and always
-  // leaves a Fire decal on the player's tile while in range.
-  attackPlayer(player, fires) {
-    const distance = calculateDistance(this.x, this.y, player.x, player.y);
+  // leaves a Fire decal on the (nearest) targeted player's tile while in range.
+  attackPlayer(players, fires) {
+    const target = nearestTarget(this, players);
+    const distance = calculateDistance(this.x, this.y, target.x, target.y);
     if (distance > 200) return null;
-    const result = enemyAttackPlayer(this, player, 5, 200);
-    if (fires) fires.push(new Fire(player.x, player.y));
+    const result = enemyAttackPlayer(this, players, 5, 200);
+    if (fires) fires.push(new Fire(target.x, target.y));
     return result;
   }
 }
 
 // ---------- Player ----------
 
+// Stat presets for the two playable characters. Duo Mode gives player 1 the
+// barbarian and player 2 the elf/rogue; classic single-player always uses
+// the barbarian (the default param below keeps every existing `new Player(x,y)`
+// call site working unchanged).
+export const CHARACTERS = {
+  barbarian: {
+    label: "Barbarian",
+    spriteBase: "barbarian_img",
+    maximumMovement: 6,
+    maxAttack: 2,
+    maxSearch: 1,
+    maximumHealth: 5,
+  },
+  elf: {
+    label: "Elf (Rogue)",
+    spriteBase: "elf_img",
+    maximumMovement: 7,
+    maxAttack: 1,
+    maxSearch: 2,
+    maximumHealth: 4,
+  },
+};
+
 export class Player {
-  constructor(x, y) {
-    this.playerImageKey = "barbarian_img_down";
+  constructor(x, y, character = CHARACTERS.barbarian) {
+    this.character = character;
+    this.playerImageKey = `${character.spriteBase}_down`;
     this.x = x;
     this.y = y;
-    this.maximumMovement = 6;
-    this.movement = 6;
-    this.maxAttack = 2;
-    this.attack = 2;
-    this.maxSearch = 1;
-    this.search = 1;
-    this.maximumHealth = 5;
-    this.health = 5;
+    this.maximumMovement = character.maximumMovement;
+    this.movement = character.maximumMovement;
+    this.maxAttack = character.maxAttack;
+    this.attack = character.maxAttack;
+    this.maxSearch = character.maxSearch;
+    this.search = character.maxSearch;
+    this.maximumHealth = character.maximumHealth;
+    this.health = character.maximumHealth;
     this.potion = 0;
     this.loot = 0;
+    this.kills = 0;
   }
 
-  move(dx, dy, enemies, doors) {
+  // `otherPlayers` is only non-trivial in Duo Mode - it stops the two
+  // players from ever standing on the same tile. Classic mode either omits
+  // it or passes an array containing only `this`, which is a no-op.
+  move(dx, dy, enemies, doors, otherPlayers = []) {
     const newX = this.x + dx;
     const newY = this.y + dy;
     for (const enemy of enemies) {
@@ -278,6 +330,9 @@ export class Player {
     }
     for (const door of doors) {
       if (newX === door.x && newY === door.y) return false;
+    }
+    for (const other of otherPlayers) {
+      if (other !== this && newX === other.x && newY === other.y) return false;
     }
     const gridX = Math.floor(newX / GRID_SIZE);
     const gridY = Math.floor(newY / GRID_SIZE);

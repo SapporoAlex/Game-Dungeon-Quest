@@ -87,7 +87,7 @@ const NUMBER_KEYS = {
   20: "twenty_img",
 };
 
-function numberKey(n) {
+export function numberKey(n) {
   const clamped = Math.max(-5, Math.min(20, n));
   return NUMBER_KEYS[clamped];
 }
@@ -122,7 +122,9 @@ export function drawDiceOverlay(ctx, diceResult) {
 }
 
 export function drawEntities(ctx, level) {
-  drawImg(ctx, level.player.playerImageKey, level.player.x, level.player.y);
+  for (const p of level.players) {
+    drawImg(ctx, p.playerImageKey, p.x, p.y);
+  }
   for (const fire of level.fires) fire.draw(ctx);
   for (const enemy of level.enemies) enemy.draw(ctx);
   for (const door of level.doors) door.draw(ctx);
@@ -135,6 +137,80 @@ export function drawEntities(ctx, level) {
 export function drawMessageOverlay(ctx, messageKey) {
   if (!messageKey) return;
   drawImg(ctx, messageKey, 300, 250);
+}
+
+// For one-off flavor text with no matching pre-made image (e.g. Duo Mode's
+// "all quests complete" banner) - a plain word-wrapped bordered box.
+export function drawTextMessageOverlay(ctx, text) {
+  if (!text) return;
+
+  ctx.save();
+  ctx.font = "bold 26px 'Trebuchet MS', sans-serif";
+  const maxTextWidth = WIDTH - 380;
+  const words = text.split(" ");
+  const lines = [];
+  let line = "";
+  for (const word of words) {
+    const candidate = line ? `${line} ${word}` : word;
+    if (line && ctx.measureText(candidate).width > maxTextWidth) {
+      lines.push(line);
+      line = word;
+    } else {
+      line = candidate;
+    }
+  }
+  if (line) lines.push(line);
+
+  const lineHeight = 34;
+  const paddingY = 30;
+  const boxHeight = lines.length * lineHeight + paddingY * 2;
+  const boxWidth = Math.min(WIDTH - 200, maxTextWidth + 80);
+  const boxX = WIDTH / 2 - boxWidth / 2;
+  const boxY = HEIGHT / 2 - boxHeight / 2;
+
+  ctx.fillStyle = "rgba(10, 9, 6, 0.92)";
+  ctx.strokeStyle = "#d8b25a";
+  ctx.lineWidth = 3;
+  if (ctx.roundRect) {
+    ctx.beginPath();
+    ctx.roundRect(boxX, boxY, boxWidth, boxHeight, 12);
+    ctx.fill();
+    ctx.stroke();
+  } else {
+    ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
+    ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
+  }
+
+  ctx.fillStyle = "#f0e2b8";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  let y = boxY + paddingY + lineHeight / 2;
+  for (const l of lines) {
+    ctx.fillText(l, WIDTH / 2, y);
+    y += lineHeight;
+  }
+  ctx.restore();
+}
+
+// Duo Mode extras: a small HP readout above each player's sprite (so you can
+// track your partner's health even on your own turn) and a turn banner. The
+// main stat panel (drawAbilitiesHUD) already shows whichever player is
+// active, so this only adds what that panel can't.
+export function drawDuoHUD(ctx, level) {
+  for (const p of level.players) {
+    drawImg(ctx, numberKey(p.health), p.x + 15, Math.max(0, p.y - 22));
+  }
+
+  const label = `Player ${level.activePlayerIndex + 1}'s Turn (${level.player.character.label})`;
+  ctx.save();
+  ctx.font = "bold 20px 'Trebuchet MS', sans-serif";
+  ctx.textBaseline = "top";
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = "#000";
+  ctx.strokeText(label, 10, 6);
+  ctx.fillStyle = "#d8b25a";
+  ctx.fillText(label, 10, 6);
+  ctx.restore();
 }
 
 // Full-frame render, equivalent to display_everything().
@@ -151,6 +227,8 @@ export function displayEverything(ctx, level, ui) {
   drawGridLines(ctx);
   drawAbilitiesHUD(ctx, level.player, ui.buttonImages);
   drawEntities(ctx, level);
+  if (level.players.length > 1) drawDuoHUD(ctx, level);
   drawDiceOverlay(ctx, ui.diceResult);
   drawMessageOverlay(ctx, ui.messageKey);
+  drawTextMessageOverlay(ctx, ui.textMessage);
 }

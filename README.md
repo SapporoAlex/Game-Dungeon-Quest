@@ -73,10 +73,10 @@ To run Dungeon Quest, you'll need Python and Pygame installed on your system.
 Clone the repository or download the source code.
 Ensure you have Python installed. If not, download and install it from python.org.
 Install Pygame by running pip install pygame in your terminal or command prompt.
-Navigate to the game's directory and run 
+The original Pygame source lives in `pygame original/` alongside the shared `assets/` folder. From the repository root, run
 
 ```bash
-python Dungeon Quest.py
+python "pygame original/Dungeon Quest.py"
 ```
 to start the game.
 
@@ -92,7 +92,7 @@ python3 -m http.server 8000
 Then visit `http://localhost:8000/index.html`. Progress (gold, potions, and upgraded stats) is saved to the browser's localStorage instead of `items.txt`.
 
 ## File Structure
-The Dungeon Quest.py file runs the game. The game_maps.py has the tile map information used by the Dungeon Quest.py file to choose the correct tiles for the level. Please feel free to add more levels in this file. the items.txt file stores the amount of gold and health potions the player has in their inventory. This data is loaded and saved at the begining and end of each level. The assets folder contains the images and audio files in seperate folders. The `index.html`/`css/`/`js/` files are the browser port described above.
+The `pygame original/` folder holds the original Pygame version: `Dungeon Quest.py` runs the game, `game_maps.py` has the tile map information used by `Dungeon Quest.py` to choose the correct tiles for the level (feel free to add more levels in this file), and `items.txt` stores the amount of gold and health potions the player has in their inventory, loaded and saved at the beginning and end of each level. The assets folder (at the repository root, shared with the web port) contains the images and audio files in separate folders. The `index.html`/`css/`/`js/` files are the browser port described above.
 
 ## Contributing
 Contributions to Dungeon Quest are welcome! Whether it's adding new features, creating new levels, or improving the code, feel free to fork the repository and submit a pull request.

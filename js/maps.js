@@ -412,3 +412,45 @@ export function gameMap3() {
   grid[15][0] = 20;
   grid[15][19] = 20;
 }
+
+// Quest 4 ("The Sunken Vault"): a 2x3 grid of rooms (left/mid/right columns,
+// top/bottom rows) fully connected by one door per shared wall - 7 doors in
+// total, giving the player a genuine choice of route from the entrance
+// (top-left) to the dragon's lair (bottom-right). Uses the same tile palette
+// as levels 0-2 (1-10 floor, 11-14 wall, 15 stairs).
+export function gameMap4() {
+  // Vertical wall between the left and mid columns, top row (gap for doorA).
+  for (let row = 0; row <= 6; row++) {
+    if (row !== 3) grid[row][6] = randInt(11, 14);
+  }
+  // Vertical wall between the mid and right columns, top row (gap for doorB).
+  for (let row = 0; row <= 6; row++) {
+    if (row !== 3) grid[row][13] = randInt(11, 14);
+  }
+  // Vertical wall between the left and mid columns, bottom row (gap for doorC).
+  for (let row = 8; row <= 15; row++) {
+    if (row !== 11) grid[row][6] = randInt(11, 14);
+  }
+  // Vertical wall between the mid and right columns, bottom row (gap for doorD).
+  for (let row = 8; row <= 15; row++) {
+    if (row !== 11) grid[row][13] = randInt(11, 14);
+  }
+  // Horizontal wall between top and bottom rows, left column (gap for doorE).
+  for (let col = 0; col <= 5; col++) {
+    if (col !== 2) grid[7][col] = randInt(11, 14);
+  }
+  // Horizontal wall between top and bottom rows, mid column (gap for doorF).
+  for (let col = 7; col <= 12; col++) {
+    if (col !== 9) grid[7][col] = randInt(11, 14);
+  }
+  // Horizontal wall between top and bottom rows, right column (gap for doorG).
+  for (let col = 14; col <= 19; col++) {
+    if (col !== 16) grid[7][col] = randInt(11, 14);
+  }
+  // Plug the two dead cells where a vertical and horizontal wall would
+  // otherwise leave an unreachable gap at their intersection.
+  grid[7][6] = randInt(11, 14);
+  grid[7][13] = randInt(11, 14);
+
+  grid[12][17] = 15; // stairwell, deep in the dragon's lair (bottom-right room)
+}

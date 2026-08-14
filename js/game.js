@@ -6,7 +6,7 @@ import { images, playSfx, playRandomSfx, playRandomMusic, playMusic, isMusicPlay
 import { ATTACK_SOUND_KEYS, DEATH_SOUND_KEYS, ENEMY_DEATH_SOUND_KEYS } from "./assets.js";
 import * as maps from "./maps.js";
 import { gameState, LEVEL } from "./state.js";
-import { Player, calculateDistance, rollDice, countHits } from "./entities.js";
+import { Player, CHARACTERS, calculateDistance, rollDice, countHits } from "./entities.js";
 import { loadItems, saveItems, resetItems, resetPlayerTurn } from "./save.js";
 import * as render from "./render.js";
 import * as screens from "./screens.js";
@@ -14,30 +14,40 @@ import * as level0 from "./levels/level0.js";
 import * as level1 from "./levels/level1.js";
 import * as level2 from "./levels/level2.js";
 import * as level3 from "./levels/level3.js";
+import * as level4 from "./levels/level4.js";
 
+// Order here is also the order the mission-select dropdown lists them in.
 const LEVEL_MODULES = {
-  [LEVEL.TUTORIAL]: { mod: level0, mapGen: maps.gameMap0, rampage: false },
-  [LEVEL.QUEST_1]: { mod: level1, mapGen: maps.gameMap1, rampage: false },
-  [LEVEL.QUEST_2]: { mod: level2, mapGen: maps.gameMap2, rampage: false },
-  [LEVEL.RAMPAGE]: { mod: level3, mapGen: maps.gameMap3, rampage: true },
+  [LEVEL.TUTORIAL]: { mod: level0, mapGen: maps.gameMap0, rampage: false, label: "Tutorial" },
+  [LEVEL.QUEST_1]: { mod: level1, mapGen: maps.gameMap1, rampage: false, label: "Quest 1" },
+  [LEVEL.QUEST_2]: { mod: level2, mapGen: maps.gameMap2, rampage: false, label: "Quest 2" },
+  [LEVEL.RAMPAGE]: { mod: level3, mapGen: maps.gameMap3, rampage: true, label: "Quest 3" },
+  [LEVEL.QUEST_4]: { mod: level4, mapGen: maps.gameMap4, rampage: false, label: "Quest 4 — The Sunken Vault" },
 };
+
+// Duo Mode cycles endlessly through every level except the tutorial.
+const DUO_CYCLE = [LEVEL.QUEST_1, LEVEL.QUEST_2, LEVEL.RAMPAGE, LEVEL.QUEST_4];
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const canvas = document.getElementById("game-canvas");
 const ctx = canvas.getContext("2d");
+const missionOverlay = document.getElementById("mission-select-overlay");
+const missionDropdown = document.getElementById("mission-dropdown");
 
 const app = {
-  mode: "menu", // 'menu' | 'missionSelect' | 'store' | 'playing'
+  mode: "menu", // 'menu' | 'missionSelect' | 'store' | 'duoStore' | 'duoEnd' | 'playing'
   level: null,
   storePlayer: null,
   storeBgKey: null,
+  duo: null, // { players: [barbarian, elf], cycleIndex, storeTurnIndex, finalStats } while Duo Mode is active
   busy: false,
   ui: {
     phaseImageKey: "panel_status_base_img",
     buttonImages: { move: "move_button_img", attack: "attack_button_img", search: "search_button_img" },
     diceResult: null,
     messageKey: null,
+    textMessage: null,
   },
 };
 
@@ -75,6 +85,14 @@ async function showMessage(key, ms = 1000) {
   app.ui.messageKey = null;
 }
 
+// Same idea as showMessage(), but for one-off flavor text that has no
+// pre-made image asset (e.g. the Duo Mode "all quests complete" banner).
+async function showTextMessage(text, ms = 2500) {
+  app.ui.textMessage = text;
+  await sleep(ms);
+  app.ui.textMessage = null;
+}
+
 async function activateArrowTrap(level) {
   const damage = maps.randInt(0, 2);
   for (let i = 0; i < damage; i++) playRandomSfx(DEATH_SOUND_KEYS);
@@ -98,9 +116,21 @@ async function performSearch(level, player) {
 
 async function completeQuest(level) {
   await showMessage("quest_complete");
-  saveItems(level.player);
-  app.level = null;
-  switchToMenu();
+  if (level.duo) {
+    const duo = level.duo;
+    // Quest 4 is the last stop in the cycle before it loops back to Quest 1 -
+    // completing it means the pair has cleared every quest at least once.
+    if (duo.cycleIndex === DUO_CYCLE.length - 1) {
+      for (const p of level.players) p.loot += 50;
+      await showTextMessage("They completed all the quests! Do they dare try again?");
+    }
+    app.level = null;
+    startDuoStore(duo);
+  } else {
+    saveItems(level.player);
+    app.level = null;
+    switchToMenu();
+  }
 }
 
 async function playerDied(level) {
@@ -110,11 +140,34 @@ async function playerDied(level) {
   switchToMenu();
 }
 
+// Duo Mode has no "quest complete, back to menu" ending - it runs until one
+// player's health hits zero, at which point the run is over and both
+// players' final gold/kill totals are shown.
+async function endDuoRun(level) {
+  await showMessage("died_msg");
+  level.duo.finalStats = level.players.map((p) => ({
+    label: p.character.label,
+    loot: p.loot,
+    kills: p.kills,
+  }));
+  app.level = null;
+  app.mode = "duoEnd";
+}
+
 // ---------- Mode transitions ----------
 
 function switchToMenu() {
   app.mode = "menu";
   playMusic("menu_theme", true);
+}
+
+function populateMissionDropdown() {
+  for (const [key, config] of Object.entries(LEVEL_MODULES)) {
+    const option = document.createElement("option");
+    option.value = key;
+    option.textContent = config.label;
+    missionDropdown.appendChild(option);
+  }
 }
 
 function switchToMissionSelect() {
@@ -127,15 +180,54 @@ function switchToStore() {
   app.storeBgKey = screens.pickStoreBackground();
 }
 
-function startLevel(levelKey) {
+// Duo Mode's two players live for the whole run (in memory only - never
+// touching the classic single-player localStorage save), so their upgraded
+// maxima and gold carry over between levels. Only their per-level state
+// (position, current health/movement/attack/search) gets reset.
+function resetForNewLevel(player) {
+  player.health = player.maximumHealth;
+  player.movement = player.maximumMovement;
+  player.attack = player.maxAttack;
+  player.search = player.maxSearch;
+}
+
+function resetTurnCounters(player) {
+  player.movement = player.maximumMovement;
+  player.attack = player.maxAttack;
+  player.search = player.maxSearch;
+}
+
+function startDuoMode() {
+  const duo = {
+    players: [new Player(0, 0, CHARACTERS.barbarian), new Player(0, 0, CHARACTERS.elf)],
+    cycleIndex: 0,
+  };
+  app.duo = duo;
+  startLevel(DUO_CYCLE[duo.cycleIndex], { duo });
+}
+
+function startDuoStore(duo) {
+  duo.cycleIndex = (duo.cycleIndex + 1) % DUO_CYCLE.length;
+  duo.storeTurnIndex = 0;
+  app.storeBgKey = screens.pickStoreBackground();
+  app.mode = "duoStore";
+}
+
+function startLevel(levelKey, options = {}) {
+  const duo = options.duo || null;
   const config = LEVEL_MODULES[levelKey];
   gameState.isRampageLevel = config.rampage;
   maps.resetNonFloorTiles();
   config.mapGen();
 
+  const players = duo ? duo.players : [new Player(0, 0)];
+
   const level = {
     key: levelKey,
-    player: new Player(0, 0),
+    duo,
+    player: players[0],
+    players,
+    activePlayerIndex: 0,
     enemies: [],
     doors: [],
     doorRefs: {},
@@ -151,8 +243,22 @@ function startLevel(levelKey) {
     searching: false,
     dying: false,
   };
-  loadItems(level.player);
+
+  if (duo) {
+    for (const p of players) resetForNewLevel(p);
+  } else {
+    loadItems(level.player);
+  }
+
   config.mod.setup(level);
+
+  if (duo) {
+    // Spawn player 2 next to player 1 - verified clear of walls on every
+    // level in the duo cycle.
+    level.players[1].x = level.players[0].x + maps.GRID_SIZE;
+    level.players[1].y = level.players[0].y;
+  }
+
   level.ctx = makeLevelCtx(level);
 
   app.level = level;
@@ -194,6 +300,7 @@ async function playerAttacksEnemy(level, enemy) {
       if (enemy.health <= 0) {
         level.enemies.splice(level.enemies.indexOf(enemy), 1);
         playRandomSfx(ENEMY_DEATH_SOUND_KEYS);
+        level.player.kills += 1;
         await sleep(200);
       }
     }
@@ -207,14 +314,13 @@ async function runEnemyTurn(level) {
     resetButtonImages();
     app.ui.phaseImageKey = "enemy_movement_phase_img";
     for (const enemy of level.enemies.slice()) {
-      enemy.moveTowardsPlayer(level.player.x, level.player.y);
+      enemy.moveTowardsPlayer(level.players);
       await sleep(200);
     }
 
     app.ui.phaseImageKey = "enemy_attack_phase_img";
     for (const enemy of level.enemies.slice()) {
-      if (level.player.x <= 50) continue;
-      const result = enemy.attackPlayer(level.player, level.fires);
+      const result = enemy.attackPlayer(level.players, level.fires);
       if (result) {
         app.ui.diceResult = result;
         await playAttackSwooshes(result.skulls);
@@ -223,8 +329,14 @@ async function runEnemyTurn(level) {
       }
     }
 
-    saveItems(level.player);
-    resetPlayerTurn(level.player);
+    if (level.duo) {
+      for (const p of level.players) resetTurnCounters(p);
+      level.activePlayerIndex = 0;
+      level.player = level.players[0];
+    } else {
+      saveItems(level.player);
+      resetPlayerTurn(level.player);
+    }
     level.playerTurn = true;
     level.phase = "movement";
     app.ui.phaseImageKey = "player_movement_phase_img";
@@ -289,7 +401,22 @@ function pressPass() {
   const level = app.level;
   if (app.busy) return;
   level.phase = "idle";
-  runEnemyTurn(level);
+  if (level.duo && level.activePlayerIndex === 0) {
+    switchToNextDuoPlayer(level);
+  } else {
+    runEnemyTurn(level);
+  }
+}
+
+// Duo Mode: player 1's turn hands off to player 2's turn (no enemy turn in
+// between - enemies only act once BOTH players have passed).
+function switchToNextDuoPlayer(level) {
+  level.activePlayerIndex = 1;
+  level.player = level.players[1];
+  level.phase = "movement";
+  level.searching = false;
+  resetButtonImages();
+  app.ui.phaseImageKey = "player_movement_phase_img";
 }
 
 function tryOpenDoor(level, x, y) {
@@ -329,6 +456,27 @@ async function handleSearchClick(level, x, y) {
         await withBusy(() => showMessage("nothing_found_msg"));
       }
       return;
+    }
+  }
+}
+
+function handleDuoStoreClick(x, y) {
+  const duo = app.duo;
+  const shopper = duo.players[duo.storeTurnIndex];
+  const purchaseKeys = ["speed", "attack", "maxhealth", "potion", "search"];
+  for (const key of purchaseKeys) {
+    if (screens.pointInRect(x, y, screens.duoStoreRects[key]())) {
+      playSfx("click");
+      screens.applyDuoPurchase(shopper, key);
+      return;
+    }
+  }
+  if (screens.pointInRect(x, y, screens.duoStoreRects.next())) {
+    playSfx("click");
+    if (duo.storeTurnIndex === 0) {
+      duo.storeTurnIndex = 1;
+    } else {
+      startLevel(DUO_CYCLE[duo.cycleIndex], { duo });
     }
   }
 }
@@ -386,22 +534,23 @@ function handleArrowKey(direction) {
   if (!level || !level.playerTurn || app.busy) return;
   if (level.phase !== "movement" || level.player.movement <= 0) return;
 
+  const spriteBase = level.player.character.spriteBase;
   let dx = 0;
   let dy = 0;
   if (direction === "left") {
     dx = -maps.GRID_SIZE;
-    level.player.playerImageKey = "barbarian_img_left";
+    level.player.playerImageKey = `${spriteBase}_left`;
   } else if (direction === "right") {
     dx = maps.GRID_SIZE;
-    level.player.playerImageKey = "barbarian_img_right";
+    level.player.playerImageKey = `${spriteBase}_right`;
   } else if (direction === "up") {
     dy = -maps.GRID_SIZE;
-    level.player.playerImageKey = "barbarian_img_up";
+    level.player.playerImageKey = `${spriteBase}_up`;
   } else if (direction === "down") {
     dy = maps.GRID_SIZE;
-    level.player.playerImageKey = "barbarian_img_down";
+    level.player.playerImageKey = `${spriteBase}_down`;
   }
-  level.player.move(dx, dy, level.enemies, level.doors);
+  level.player.move(dx, dy, level.enemies, level.doors, level.players);
 }
 
 // ---------- Screen click dispatch ----------
@@ -414,6 +563,9 @@ async function handleCanvasClick(x, y) {
     } else if (screens.pointInRect(x, y, screens.mainMenuRects.store())) {
       playSfx("click");
       switchToStore();
+    } else if (screens.pointInRect(x, y, screens.mainMenuRects.duoMode())) {
+      playSfx("click");
+      startDuoMode();
     } else if (screens.pointInRect(x, y, screens.mainMenuRects.exit())) {
       playSfx("click");
       // Browsers won't let a page close itself unless it was opened by
@@ -422,20 +574,16 @@ async function handleCanvasClick(x, y) {
     }
     return;
   }
-  if (app.mode === "missionSelect") {
-    if (screens.pointInRect(x, y, screens.missionSelectRects.level_0())) {
-      playSfx("click");
-      startLevel(LEVEL.TUTORIAL);
-    } else if (screens.pointInRect(x, y, screens.missionSelectRects.level_1())) {
-      playSfx("click");
-      startLevel(LEVEL.QUEST_1);
-    } else if (screens.pointInRect(x, y, screens.missionSelectRects.level_2())) {
-      playSfx("click");
-      startLevel(LEVEL.QUEST_2);
-    } else if (screens.pointInRect(x, y, screens.missionSelectRects.level_3())) {
-      playSfx("click");
-      startLevel(LEVEL.RAMPAGE);
-    }
+  // Mission select has no canvas buttons of its own anymore - it's driven
+  // entirely by the mission-dropdown overlay (see setupInput).
+  if (app.mode === "duoStore") {
+    handleDuoStoreClick(x, y);
+    return;
+  }
+  if (app.mode === "duoEnd") {
+    playSfx("click");
+    app.duo = null;
+    switchToMenu();
     return;
   }
   if (app.mode === "store") {
@@ -536,6 +684,17 @@ function setupInput() {
       handleArrowKey(dirBtn.dataset.dir);
     });
   }
+
+  document.getElementById("mission-start-btn").addEventListener("click", () => {
+    if (app.mode !== "missionSelect") return;
+    playSfx("click");
+    startLevel(missionDropdown.value);
+  });
+  document.getElementById("mission-back-btn").addEventListener("click", () => {
+    if (app.mode !== "missionSelect") return;
+    playSfx("click");
+    switchToMenu();
+  });
 }
 
 // ---------- Per-frame update ----------
@@ -544,9 +703,13 @@ async function updatePlaying() {
   const level = app.level;
   if (!level) return;
 
-  if (level.player.health <= 0 && !level.dying && !app.busy) {
+  if (level.players.some((p) => p.health <= 0) && !level.dying && !app.busy) {
     level.dying = true;
-    await withBusy(() => playerDied(level));
+    if (level.duo) {
+      await withBusy(() => endDuoRun(level));
+    } else {
+      await withBusy(() => playerDied(level));
+    }
     return;
   }
   if (!level.player || app.mode !== "playing") return;
@@ -566,12 +729,17 @@ async function updatePlaying() {
 }
 
 function draw() {
+  missionOverlay.hidden = app.mode !== "missionSelect";
   if (app.mode === "menu") {
     screens.drawMainMenu(ctx);
   } else if (app.mode === "missionSelect") {
     screens.drawMissionSelect(ctx);
   } else if (app.mode === "store") {
     screens.drawStore(ctx, app.storePlayer, app.storeBgKey);
+  } else if (app.mode === "duoStore") {
+    screens.drawDuoStore(ctx, app.duo, app.storeBgKey);
+  } else if (app.mode === "duoEnd") {
+    screens.drawDuoEnd(ctx, app.duo);
   } else if (app.mode === "playing" && app.level) {
     render.displayEverything(ctx, app.level, app.ui);
   }
@@ -590,6 +758,7 @@ function frame() {
 }
 
 export function startGame() {
+  populateMissionDropdown();
   setupInput();
   switchToMenu();
   requestAnimationFrame(frame);

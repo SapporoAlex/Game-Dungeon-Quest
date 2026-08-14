@@ -6,7 +6,7 @@ import { addDoor, anyOpen, makeRoomFlags } from "./common.js";
 export function setup(level) {
   level.player.x = 450;
   level.player.y = 350;
-  level.player.health -= 2;
+  for (const p of level.players) p.health -= 2;
   level.rooms = makeRoomFlags();
   level.flags = {
     startMessage: 0,

@@ -13,10 +13,6 @@ export const IMAGE_MANIFEST = {
   select_mission_button: "assets/images/select_quest_button.png",
   store_button: "assets/images/store_button.png",
   exit_game_button: "assets/images/exit_game_button.png",
-  mission_0_button: "assets/images/Tutorial.png",
-  mission_1_button: "assets/images/Quest 1.png",
-  mission_2_button: "assets/images/Quest 2.png",
-  mission_3_button: "assets/images/Quest 3.png",
   icon: "assets/images/icon.jpg",
 
   // In-game UI
@@ -117,6 +113,10 @@ export const IMAGE_MANIFEST = {
   barbarian_img_up: "assets/images/barbarian_up_img.png",
   barbarian_img_left: "assets/images/barbarian_left_img.png",
   barbarian_img_right: "assets/images/barbarian_right_img.png",
+  elf_img_down: "assets/images/elf_down_img.png",
+  elf_img_up: "assets/images/elf_up_img.png",
+  elf_img_left: "assets/images/elf_left_img.png",
+  elf_img_right: "assets/images/elf_right_img.png",
   skeleton_down_img: "assets/images/skeleton_img_down.png",
   skeleton_left_img: "assets/images/skeleton_img_left.png",
   skeleton_right_img: "assets/images/skeleton_img_right.png",
