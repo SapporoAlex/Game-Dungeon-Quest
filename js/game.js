@@ -367,6 +367,7 @@ function isClickOnFurniture(level, x, y, item, range) {
 
 function pressMove() {
   const level = app.level;
+  if (level.player.movement <= 0) return;
   level.phase = "movement";
   app.ui.phaseImageKey = "player_movement_phase_img";
   app.ui.buttonImages = { move: "move_button_pressed_img", attack: "attack_button_img", search: "search_button_img" };
@@ -374,6 +375,7 @@ function pressMove() {
 
 function pressAttack() {
   const level = app.level;
+  if (level.player.attack <= 0) return;
   level.phase = "attack";
   app.ui.phaseImageKey = "player_attack_phase_img";
   app.ui.buttonImages = { move: "move_button_img", attack: "attack_button_pressed_img", search: "search_button_img" };
@@ -390,7 +392,7 @@ function pressSearch() {
 function pressPotion() {
   const level = app.level;
   const player = level.player;
-  if (player.potion > 0 || player.health !== player.maximumHealth) {
+  if (player.potion > 0 && player.health !== player.maximumHealth) {
     player.health = player.maximumHealth;
     player.potion -= 1;
   }
@@ -491,13 +493,14 @@ async function handleGameplayClick(x, y) {
   const potionRect = { x: render.WIDTH - 170, y: 410, w: images.potion_img.width, h: images.potion_img.height };
   const passRect = { x: render.WIDTH - 170, y: 725, w: images.pass_button_img.width, h: images.pass_button_img.height };
 
+  const available = render.buttonAvailability(level.player);
   if (screens.pointInRect(x, y, moveRect)) {
-    playSfx("click");
+    if (available.move) playSfx("click");
     pressMove();
     return;
   }
   if (screens.pointInRect(x, y, attackRect)) {
-    playSfx("click");
+    if (available.attack) playSfx("click");
     pressAttack();
     return;
   }
@@ -507,7 +510,7 @@ async function handleGameplayClick(x, y) {
     return;
   }
   if (screens.pointInRect(x, y, potionRect)) {
-    playSfx("click");
+    if (available.potion) playSfx("click");
     pressPotion();
     return;
   }
@@ -649,13 +652,13 @@ function setupInput() {
 
   bind("btn-move", () => {
     if (app.mode === "playing" && app.level?.playerTurn && !app.busy) {
-      playSfx("click");
+      if (app.level.player.movement > 0) playSfx("click");
       pressMove();
     }
   });
   bind("btn-attack", () => {
     if (app.mode === "playing" && app.level?.playerTurn && !app.busy) {
-      playSfx("click");
+      if (app.level.player.attack > 0) playSfx("click");
       pressAttack();
     }
   });
@@ -667,7 +670,7 @@ function setupInput() {
   });
   bind("btn-potion", () => {
     if (app.mode === "playing" && app.level?.playerTurn && !app.busy) {
-      playSfx("click");
+      if (app.level.player.potion > 0) playSfx("click");
       pressPotion();
     }
   });
@@ -742,6 +745,23 @@ function draw() {
     screens.drawDuoEnd(ctx, app.duo);
   } else if (app.mode === "playing" && app.level) {
     render.displayEverything(ctx, app.level, app.ui);
+  }
+  syncMobileButtons();
+}
+
+const mobileButtons = {
+  move: document.getElementById("btn-move"),
+  attack: document.getElementById("btn-attack"),
+  search: document.getElementById("btn-search"),
+  potion: document.getElementById("btn-potion"),
+};
+
+// Greys out the touch-control buttons to match the canvas HUD.
+function syncMobileButtons() {
+  const player = app.mode === "playing" && app.level ? app.level.player : null;
+  const available = player ? render.buttonAvailability(player) : {};
+  for (const [key, el] of Object.entries(mobileButtons)) {
+    if (el) el.classList.toggle("unavailable", !!player && !available[key]);
   }
 }
 

@@ -191,6 +191,10 @@ html, body {
   background: #7a5c2c;
   border-color: #ffcf6b;
 }
+.action-btn.unavailable {
+  filter: grayscale(1);
+  opacity: 0.4;
+}
 .action-btn.pass {
   background: #402020;
   border-color: #a05050;

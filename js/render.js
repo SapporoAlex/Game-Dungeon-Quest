@@ -43,6 +43,29 @@ function drawImg(ctx, key, x, y) {
   }
 }
 
+// Draws a button faded and desaturated when it can't be used.
+function drawButton(ctx, key, x, y, enabled) {
+  if (enabled) {
+    drawImg(ctx, key, x, y);
+    return;
+  }
+  ctx.save();
+  ctx.filter = "grayscale(1)";
+  ctx.globalAlpha = 0.4;
+  drawImg(ctx, key, x, y);
+  ctx.restore();
+}
+
+// Which phase buttons still have uses left this turn.
+export function buttonAvailability(player) {
+  return {
+    move: player.movement > 0,
+    attack: player.attack > 0,
+    search: player.search > 0,
+    potion: player.potion > 0,
+  };
+}
+
 export function drawFloorTiles(ctx) {
   const rampage = gameState.isRampageLevel;
   for (let row = 0; row < GRID_ROWS; row++) {
@@ -93,10 +116,11 @@ export function numberKey(n) {
 }
 
 export function drawAbilitiesHUD(ctx, player, buttonImages) {
-  drawImg(ctx, buttonImages.move, WIDTH - 170, 200);
-  drawImg(ctx, buttonImages.attack, WIDTH - 170, 270);
-  drawImg(ctx, buttonImages.search, WIDTH - 170, 340);
-  drawImg(ctx, "potion_img", WIDTH - 170, 410);
+  const available = buttonAvailability(player);
+  drawButton(ctx, buttonImages.move, WIDTH - 170, 200, available.move);
+  drawButton(ctx, buttonImages.attack, WIDTH - 170, 270, available.attack);
+  drawButton(ctx, buttonImages.search, WIDTH - 170, 340, available.search);
+  drawButton(ctx, "potion_img", WIDTH - 170, 410, available.potion);
   drawImg(ctx, "life_img", WIDTH - 170, 480);
   drawImg(ctx, "loot_img", WIDTH - 170, 550);
   drawImg(ctx, numberKey(player.movement), WIDTH - 80, 200);
@@ -219,9 +243,6 @@ export function displayEverything(ctx, level, ui) {
   ctx.fillRect(0, 0, WIDTH, HEIGHT);
   drawPanel(ctx);
   drawPhaseIcon(ctx, ui.phaseImageKey);
-  drawImg(ctx, ui.buttonImages.move, WIDTH - 170, 200);
-  drawImg(ctx, ui.buttonImages.attack, WIDTH - 170, 270);
-  drawImg(ctx, ui.buttonImages.search, WIDTH - 170, 340);
   drawPassButton(ctx);
   drawFloorTiles(ctx);
   drawGridLines(ctx);
